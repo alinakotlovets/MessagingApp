@@ -3,6 +3,7 @@ import cors from "cors";
 import {errorHandler} from "./middlewares/errorHandler.js";
 import authRouter from "./routes/authRouter.js";
 import chatRouter from "./routes/chatRouter.js";
+import messageRouter from "./routes/messageRouter.js";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
+app.use("/message", messageRouter);
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 

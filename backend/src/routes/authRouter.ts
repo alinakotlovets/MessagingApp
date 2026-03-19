@@ -1,5 +1,6 @@
 import express from "express";
-import {validateRegister, validateFields, validateLogin, validateEmailVerifyCode} from "../middlewares/validateAuth.js";
+import {validateFields} from "../middlewares/validateFields.js";
+import {validateRegister,validateLogin, validateEmailVerifyCode} from "../services/validateAuth.js";
 import {registerUser, loginUser, verifyEmail, resendEmail, getEmailStatus} from "../controllers/authController.js";
 import {upload} from "../utils/multer.js";
 import {validateAvatar} from "../middlewares/validateAvatar.js";

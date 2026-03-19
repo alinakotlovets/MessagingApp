@@ -1,6 +1,4 @@
-import {body, validationResult} from "express-validator";
-import {AppError} from "../utils/AppError.js";
-import type {Request, Response, NextFunction} from "express";
+import {body} from "express-validator";
 
 export const validateRegister = [
     body("displayName")
@@ -69,14 +67,3 @@ export const validateEmailVerifyCode = [
         .matches(/[0-9]/).withMessage("Code must contain numbers")
         .not().isAlpha().withMessage('Code must not contain any letters.')
 ]
-
-export async function validateFields(req: Request, res: Response, next: NextFunction){
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        const formattedErrors = errors.array().map(err=>({
-            message: err.msg
-        }));
-        throw new AppError(400, JSON.stringify(formattedErrors));
-    }
-    next()
-}

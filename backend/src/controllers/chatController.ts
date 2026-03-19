@@ -33,11 +33,15 @@ export async function getUserChats(req: Request, res:Response){
 }
 
 export async function getChatById(req:Request, res:Response){
-    const {chatId} = req.params;
-    if(!chatId) throw new AppError(400, "Chat id is required");
-    if(typeof chatId === "string"){
-        const chat = await chatService.getChatById(parseInt(chatId));
-        if(!chat) throw new AppError(404, "Chat not found");
-        res.status(200).json({chat});
+    const rawChatId = req.params.chatId;
+
+    const chatId = Number(rawChatId);
+
+    if(!rawChatId || Number.isNaN(chatId)){
+        throw new AppError(400, "chat id is invalid");
     }
+
+    const chat = await chatService.getChatById(chatId);
+    if(!chat) throw new AppError(404, "Chat not found");
+    res.status(200).json({chat});
 }

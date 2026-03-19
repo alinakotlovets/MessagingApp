@@ -1,0 +1,77 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Type {
+  PRIVATE
+  GROUP
+}
+
+model User {
+  id          Int        @id @default(autoincrement())
+  displayName String
+  username    String     @unique
+  email       String     @unique
+  isVerified  Boolean    @default(false)
+  avatar      String?
+  password    String
+  createdAt   DateTime   @default(now())
+  codes       Code[]
+  chatUsers   ChatUser[]
+  messages    Message[]
+}
+
+model Code {
+  id        Int      @id @default(autoincrement())
+  code      String
+  createtAt DateTime @default(now())
+  expiersAr Int      @default(30)
+  used      Boolean  @default(false)
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Chat {
+  id                   Int        @id @default(autoincrement())
+  type                 Type
+  name                 String
+  createdAt            DateTime   @default(now())
+  lastMessageId        Int?
+  lastMessageText      String?
+  lastMessageCreatedAt DateTime?
+  lastMessageSenderId  Int?
+  chatUsers            ChatUser[]
+  messages             Message[]
+}
+
+model ChatUser {
+  id                Int      @id @default(autoincrement())
+  chatId            Int
+  chat              Chat     @relation(fields: [chatId], references: [id])
+  userId            Int
+  user              User     @relation(fields: [userId], references: [id])
+  role              Role
+  joinedAt          DateTime @default(now())
+  lastReadMessageId Int?
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  chatId    Int
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  senderId  Int
+  user      User     @relation(fields: [senderId], references: [id])
+  text      String
+  createdAt DateTime @default(now())
+  editedAt  DateTime @updatedAt
+}

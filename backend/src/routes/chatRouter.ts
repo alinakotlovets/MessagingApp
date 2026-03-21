@@ -5,7 +5,7 @@ import {createPrivateChat, getUserChats, getChatById} from "../controllers/chatC
 
 const chatRouter = express.Router();
 
+chatRouter.get("/user", authenticateToken, requireVerifiedEmail, getUserChats);
 chatRouter.get("/:chatId", authenticateToken, requireVerifiedEmail, getChatById)
-chatRouter.get("/user/:userId", authenticateToken, requireVerifiedEmail, getUserChats);
 chatRouter.post("/private",authenticateToken, requireVerifiedEmail, createPrivateChat);
 export default chatRouter;

@@ -24,6 +24,12 @@ export default async function Client( link: string,
         return response.json();
 
     } catch (e){
-        return {error: e};
+        let error: string = "Something went wrong!";
+        if(typeof e === "string"){
+            error = e;
+        } else if (e instanceof TypeError) {
+            error = e.message;
+        }
+        return {messages: [error]};
     }
 }

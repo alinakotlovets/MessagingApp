@@ -31,7 +31,7 @@ export const chatService = {
                 }
             });
     },
-    getUserChats: async (userId: number):Promise <Chat[] | []> =>
+    getUserChats: async (userId: number):Promise <Chat[]> =>
         await prisma.chat.findMany({
             where: {
                 chatUsers: {

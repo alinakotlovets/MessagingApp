@@ -15,14 +15,8 @@ export default function VerifiedRoute({ children }: { children: JSX.Element }){
             }
             try {
                 const response = await Client("/auth/status", "GET");
-                if(response.messages){
-                    let messages;
-                    if(typeof response.messages === "string"){
-                        messages = [response.messages];
-                    } else{
-                        messages = response.messages.map(( m:{message: string})=> m.message);
-                    }
-                    navigate("/verify-email", { state: { error: messages }});
+                if(response.errors){
+                    navigate("/verify-email", { state: { error: response.errors }});
                 } else {
                     setLoading(false);
                 }

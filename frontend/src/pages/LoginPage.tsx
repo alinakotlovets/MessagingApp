@@ -26,14 +26,8 @@ function LoginPage(){
         e.preventDefault();
         const body = JSON.stringify(inputValue);
         const response =  await Client("/auth/login", "POST", body);
-        if(response.messages){
-            let messages;
-            if(typeof response.messages === "string"){
-                messages = [response.messages];
-            } else{
-                messages = response.messages.map(( m:{message: string})=> m.message);
-            }
-            setErrors(messages);
+        if(response.errors){
+            setErrors(response.errors);
         } else {
             setErrors([]);
             window.localStorage.setItem("token", `${response.token}`);

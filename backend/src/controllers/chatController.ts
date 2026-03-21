@@ -20,16 +20,9 @@ export async function createPrivateChat(req:Request, res: Response){
 }
 
 export async function getUserChats(req: Request, res:Response){
-    const {userId} = req.params;
-    if(!userId) throw new AppError(400, "User id is required");
-    if (typeof userId === "string") {
-        const chats = await chatService.getUserChats(parseInt(userId));
-        if(!chats) {
-            res.status(200).json({chats: "there no chats"})
-        } else {
-            res.status(200).json({chats})
-        }
-    }
+    const userId = getUserIdOrError(req);
+    const chats = await chatService.getUserChats(userId);
+    res.status(200).json({chats})
 }
 
 export async function getChatById(req:Request, res:Response){

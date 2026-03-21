@@ -21,14 +21,8 @@ function VerifyEmail(){
     async function handleSubmit(e:React.SubmitEvent<HTMLFormElement>){
         e.preventDefault();
         const response = await Client("/auth/email", "POST", JSON.stringify({code: valueInput}));
-        if(response.messages){
-            let messages;
-            if(typeof response.messages === "string"){
-                messages = [response.messages];
-            } else {
-                messages = response.messages.map((m: {message: string})=> m.message);
-            }
-            setErrors(messages);
+        if(response.errors){
+            setErrors(response.errors);
         } else {
             setErrors([]);
             navigate("/");
@@ -38,14 +32,8 @@ function VerifyEmail(){
     async function handleResendCode(e:React.MouseEvent<HTMLButtonElement>){
         e.preventDefault();
         const response = await Client("/auth/email/resend", "GET");
-        if(response.messages){
-            let messages;
-            if(typeof response.messages === "string"){
-                messages = [response.messages];
-            } else {
-                messages = response.messages.map((m: {message: string})=> m.message);
-            }
-            setErrors(messages);
+        if(response.errors){
+            setErrors(response.errors);
         } else {
             setErrors([]);
             alert("Code send!")

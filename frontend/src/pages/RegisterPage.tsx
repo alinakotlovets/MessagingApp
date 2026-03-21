@@ -40,14 +40,8 @@ function RegisterPage(){
             formData.append("avatar", avatar);
         }
         const response = await Client("/auth/register", "POST", formData);
-        if(response.messages){
-            let messages;
-            if(typeof response.messages === "string"){
-                messages = [response.messages];
-            } else{
-                messages = response.messages.map(( m:{message: string})=> m.message);
-            }
-            setErrors(messages);
+        if(response.errors){
+            setErrors(response.errors);
         } else {
             setErrors([]);
             window.localStorage.setItem("token", `${response.token}`);

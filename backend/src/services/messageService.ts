@@ -5,7 +5,17 @@ import type {Message} from "../../generated/prisma/client.js";
 export const messageService = {
     addMessage: async(chatId: number, senderId: number, text: string): Promise<Message> =>
     { return prisma.$transaction(async (tx)=>{
-        const message = await tx.message.create({data:{chatId,senderId, text}});
+        const message = await tx.message.create({
+            data:{chatId,senderId, text},
+            include:{
+                user:{
+                    select:{
+                        id: true,
+                        displayName: true,
+                        avatar: true
+                    }}
+            }
+        });
         await tx.chat.update({where:{id: chatId}, data:{
                 lastMessageId: message.id,
                 lastMessageCreatedAt: message.createdAt,

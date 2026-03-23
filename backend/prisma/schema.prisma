@@ -55,14 +55,13 @@ model Chat {
 }
 
 model ChatUser {
-  id                Int      @id @default(autoincrement())
-  chatId            Int
-  chat              Chat     @relation(fields: [chatId], references: [id])
-  userId            Int
-  user              User     @relation(fields: [userId], references: [id])
-  role              Role
-  joinedAt          DateTime @default(now())
-  lastReadMessageId Int?
+  id       Int      @id @default(autoincrement())
+  chatId   Int
+  chat     Chat     @relation(fields: [chatId], references: [id])
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
+  role     Role
+  joinedAt DateTime @default(now())
 }
 
 model Message {

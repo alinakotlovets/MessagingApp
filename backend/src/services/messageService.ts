@@ -27,7 +27,7 @@ export const messageService = {
     getLastMessages: async(chatId: number, cursorId: number | null): Promise <Message[]> =>
         prisma.message.findMany({where:{
                 chatId,
-                ...(cursorId ? {id: {lt: chatId}} :{})
+                ...(cursorId ? {id: {lt: cursorId}} :{})
             },
             include:{
             user:{

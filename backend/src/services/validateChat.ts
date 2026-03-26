@@ -14,11 +14,26 @@ export const validateGroupChat = [
         .notEmpty().withMessage("Chat name is required")
         .isLength({ min: 1, max: 50 }).withMessage("Chat name must be 1-50 symbols"),
     body("usersId")
+        .customSanitizer((value) => {
+            try {
+                return JSON.parse(value);
+            } catch {
+                throw new Error("usersId must be a valid JSON array");
+            }
+        })
         .custom((value) => {
-            if (!Array.isArray(value)) throw new Error("Users must be an array");
-            if (value.length < 1) throw new Error("Need at least one user to create chat");
-            const isArrayOfNum = value.every((item: any) => typeof item === "number");
-            if (!isArrayOfNum) throw new Error( "All user IDs must be numbers");
+            if (!Array.isArray(value)) {
+                throw new Error("Users must be an array");
+            }
+
+            if (value.length < 1) {
+                throw new Error("Need at least one user");
+            }
+
+            if (!value.every(id => typeof id === "number")) {
+                throw new Error("All user IDs must be numbers");
+            }
+
             return true;
         })
 ];

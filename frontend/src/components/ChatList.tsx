@@ -6,15 +6,16 @@ import { getChatName } from "../utils/getChatName.ts";
 type Props = {
     setSelectedChatId: (id: number) => void;
     currentUser: { id: number; displayName: string; username: string; avatar: string | null } | null;
+    setChats: (chat:any)=>void,
+    chats:any
 };
 
-export function ChatList({ setSelectedChatId, currentUser }: Props) {
+export function ChatList({ setSelectedChatId, currentUser, setChats, chats}: Props) {
 
     const [errors, setErrors] = useState({ chatErrors: [], searchErrors: [] });
     const [isLoading, setIsLoading] = useState({ chatLoading: false, searchLoading: false });
     const [searchValue, setSearchValue] = useState("");
     const [users, setUsers] = useState<[] | null>(null);
-    const [chats, setChats] = useState<any>([]);
 
     useEffect(() => {
         setIsLoading(prev => ({ ...prev, chatLoading: true }));

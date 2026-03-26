@@ -3,6 +3,7 @@ import {userServices} from "../services/userService.js";
 import {AppError} from "../utils/AppError.js";
 import {getUserIdOrError} from "../services/userHelpers.js";
 import {chatService} from "../services/chatService.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export async function createPrivateChat(req:Request, res: Response){
     const {userId} = req.body;
@@ -39,8 +40,17 @@ export async function getChatById(req:Request, res:Response){
     res.status(200).json({chat});
 }
 export async function createGroupChat(req:Request, res:Response){
-    let {name, usersId, avatar} = req.body;
-    if(!avatar) avatar = null;
+    let {name, usersId} = req.body;
+    let avatar:string|null = null;
+    if(req.file){
+        const result = await cloudinary.uploader.upload(
+            `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+            {
+                folder: "messenger-group-chats"
+            }
+        );
+        avatar = result.secure_url;
+    }
 
     const currentUserId = getUserIdOrError(req);
     const chat =await chatService.createGroupChat("GROUP", name, usersId, currentUserId, avatar);

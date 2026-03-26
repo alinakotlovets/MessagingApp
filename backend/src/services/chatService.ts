@@ -3,11 +3,10 @@ import type {Chat} from "../../generated/prisma/client.js";
 import { Role, Type } from "../../generated/prisma/client.js";
 
 export const chatService = {
-    createChat: async (type: Type, name: string, firstUserId: number, secondUserId: number): Promise<Chat> => {
+    createChat: async (type: Type, firstUserId: number, secondUserId: number): Promise<Chat> => {
         return prisma.chat.create({
                 data: {
                     type,
-                    name,
                     chatUsers:{
                         create:[
                             { userId: firstUserId, role: Role.USER },
@@ -87,4 +86,26 @@ export const chatService = {
             },
             include: { chatUsers: true }
         }),
+    createGroupChat: async(type:Type, name:string, usersId:number[], currentUserId: number, avatar: string|null):Promise<Chat> =>
+        await prisma.chat.create({
+            data:{
+                type,
+                name,
+                avatar,
+                chatUsers:{
+                    create: [
+                        {userId: currentUserId, role: Role.ADMIN},
+                        ...usersId.map((id:number)=>({userId: id, role: Role.USER}))
+                    ]
+                }
+
+            },
+            include: {
+                chatUsers: {
+                    include: {
+                        user: { select: { id: true, displayName: true, username: true, avatar: true } }
+                    }
+                }
+            }
+        })
 };

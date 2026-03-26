@@ -44,7 +44,8 @@ model Code {
 model Chat {
   id                   Int        @id @default(autoincrement())
   type                 Type
-  name                 String
+  name                 String?
+  avatar               String?
   createdAt            DateTime   @default(now())
   lastMessageId        Int?
   lastMessageText      String?

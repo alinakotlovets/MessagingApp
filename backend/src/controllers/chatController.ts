@@ -5,17 +5,17 @@ import {getUserIdOrError} from "../services/userHelpers.js";
 import {chatService} from "../services/chatService.js";
 
 export async function createPrivateChat(req:Request, res: Response){
-    const {username} = req.body;
-    if(!username) throw new AppError(400, "Username is required");
-    const chatUser = await userServices.getUserByUsername(username);
-    if(!chatUser) throw new AppError(404, "User with this username not found");
+    const {userId} = req.body;
+    if(!userId) throw new AppError(400, "User id is required");
+    const user = await userServices.getUserById(parseInt(userId));
+    if(!user) throw new AppError(404,"User with this is not found");
     const currentUserId = getUserIdOrError(req);
-    if(currentUserId === chatUser.id) throw new AppError(400, "You cant create chat with yourself");
-    const existingChat = await chatService.existingChat(currentUserId, chatUser.id);
-    if(existingChat) throw new AppError(400, "Chat already exist");
-
-    const chat = await chatService.createChat("PRIVATE", chatUser.displayName, currentUserId, chatUser.id);
-
+    if(currentUserId === userId) throw new AppError(400, "You cant create chat with yourself");
+    const existingChat = await chatService.existingChat(currentUserId, userId);
+    if(existingChat) {
+         return res.status(200).json({chat: existingChat});
+    }
+    const chat = await chatService.createChat("PRIVATE", currentUserId, user.id);
     res.status(201).json({chat});
 }
 
@@ -37,4 +37,12 @@ export async function getChatById(req:Request, res:Response){
     const chat = await chatService.getChatById(chatId);
     if(!chat) throw new AppError(404, "Chat not found");
     res.status(200).json({chat});
+}
+export async function createGroupChat(req:Request, res:Response){
+    let {name, usersId, avatar} = req.body;
+    if(!avatar) avatar = null;
+
+    const currentUserId = getUserIdOrError(req);
+    const chat =await chatService.createGroupChat("GROUP", name, usersId, currentUserId, avatar);
+    res.status(201).json({chat});
 }

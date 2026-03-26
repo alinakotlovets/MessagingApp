@@ -1,12 +1,14 @@
 import {useEffect, useState, useRef} from "react";
 import Client from "../api/client.ts";
 import * as React from "react";
+import {getChatName} from "../utils/getChatName.ts";
 
 type Props = {
     selectedChatId: number | null;
+    currentUser: { id: number; displayName: string, username: string, avatar:string|null } | null;
 };
 
-export function ChatWindow({ selectedChatId }: Props) {
+export function ChatWindow({ selectedChatId, currentUser }: Props) {
 
     const [errors, setErrors] = useState<{
         chat: string[],
@@ -179,7 +181,7 @@ export function ChatWindow({ selectedChatId }: Props) {
 
             {!isLoading.chat && selectedChatId !== null && chat &&(
                 <div>
-                    <h2>Chat name: {chat.name}</h2>
+                    <h2>Chat name: {getChatName(chat, currentUser)}</h2>
                     <h4>Users: {chat.chatUsers.length}</h4>
                 </div>
             )}

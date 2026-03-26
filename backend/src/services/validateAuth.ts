@@ -67,3 +67,4 @@ export const validateEmailVerifyCode = [
         .matches(/[0-9]/).withMessage("Code must contain numbers")
         .not().isAlpha().withMessage('Code must not contain any letters.')
 ]
+

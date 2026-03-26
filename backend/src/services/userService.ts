@@ -1,5 +1,7 @@
 import {prisma} from "../../lib/prisma.js";
 import type {Code, User} from "../../generated/prisma/client.js"
+
+type UserSearchResult = {id: number ,username: string,  displayName: string, avatar: string | null};
 export const userServices = {
     addUser: async (displayName: string, username: string, email: string, avatar: string | null, password: string) :Promise<User> =>
         prisma.user.create({data: {displayName, username, email, avatar, password}}),
@@ -20,6 +22,25 @@ export const userServices = {
         prisma.user.update({where:{id: userId}, data:{isVerified: true}}),
     getUserById: async(userId: number) :Promise<User | null> =>
         prisma.user.findUnique({where:{id: userId}}),
+    findUsersByUsername: async(username: string):Promise <UserSearchResult[]> =>
+        prisma.user.findMany(
+            {where: {
+                username: {
+                    contains: username,
+                    mode: 'insensitive'
+                }
+            }, select:{
+                    id: true,
+                    username: true,
+                    displayName:true,
+                    avatar:true
+            },
+                orderBy: {
+                    username: "asc"
+                },
+                take: 10
+            }
+        )
 }
 
 export const verifyEmailServices = {

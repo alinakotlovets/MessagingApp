@@ -2,13 +2,20 @@ import {useEffect, useState, useRef} from "react";
 import Client from "../api/client.ts";
 import * as React from "react";
 import {getChatName} from "../utils/getChatName.ts";
+import type {Chat} from "../types/Chat.ts";
+import type {Message} from "../types/Message.ts";
+import {GroupChatInfo} from "./GroupChatInfo.tsx";
+import {PrivateChatInfo} from "./PrivateChatInfo.tsx";
 
 type Props = {
     selectedChatId: number | null;
     currentUser: { id: number; displayName: string, username: string, avatar:string|null } | null;
+    setSelectedChatId: (value: number|null) => void,
+    setChats: (chat:any)=>void,
+    chats:Chat[]
 };
 
-export function ChatWindow({ selectedChatId, currentUser }: Props) {
+export function ChatWindow({ selectedChatId, currentUser, setSelectedChatId, setChats, chats}: Props) {
 
     const [errors, setErrors] = useState<{
         chat: string[],
@@ -16,12 +23,13 @@ export function ChatWindow({ selectedChatId, currentUser }: Props) {
         sendMessage: string[]
     }>({chat: [], messages: [], sendMessage:[]});
     const [isLoading, setIsLoading] = useState({chat: false, messages:false});
-    const [chat, setChat] = useState<any>(null);
-    const [messages, setMessages] = useState<any>([])
+    const [chat, setChat] = useState<Chat | null>(null);
+    const [messages, setMessages] = useState<Message[]>([])
     const [inputValue, setInputValue] = useState("");
     const [isInitialLoad, setIsInitialLoad] = useState<boolean|null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [hasMoreMessages, setHasMoreMessages] = useState(true);
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     useEffect(() => {
         if (selectedChatId === null) return;
@@ -164,6 +172,28 @@ export function ChatWindow({ selectedChatId, currentUser }: Props) {
 
     return(
         <div className="chat-window-box">
+            {isSettingsOpen && chat &&(
+                <div className="modal-overlay">
+                    {chat.type === "GROUP" ? (
+                        <GroupChatInfo chat={chat}
+                                       setIsSettingsOpen={setIsSettingsOpen}
+                                       currentUser={currentUser}
+                                       setChat={setChat}
+                                       setSelectedChatId={setSelectedChatId}
+                                       chats={chats}
+                                       setChats={setChats}
+                        />
+                    ):(
+                        <PrivateChatInfo chat={chat}
+                                         setIsSettingsOpen={setIsSettingsOpen}
+                                         setChat={setChat}
+                                         setSelectedChatId={setSelectedChatId}
+                                         chats={chats}
+                                         setChats={setChats}
+                        />
+                    )}
+                </div>
+            )}
             <div>
             {isLoading.chat &&(<h2>Loading...</h2>)}
 
@@ -182,7 +212,11 @@ export function ChatWindow({ selectedChatId, currentUser }: Props) {
             {!isLoading.chat && selectedChatId !== null && chat &&(
                 <div>
                     <h2>Chat name: {getChatName(chat, currentUser)}</h2>
-                    <h4>Users: {chat.chatUsers.length}</h4>
+                    {chat.type === "GROUP" ? ( <div>
+                            <h4>{chat.chatUsers.length} users</h4>
+                    </div>
+                    ): null}
+                    <button onClick={()=> setIsSettingsOpen(true)}>Settings</button>
                 </div>
             )}
             </div>

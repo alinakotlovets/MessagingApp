@@ -3,10 +3,11 @@ import Client from "../api/client.ts";
 type UserSearchProps = {
     onSelect: (user: any) => void;
 };
+import type {User} from "../types/User.ts";
 
 export function UserSearch({onSelect}:UserSearchProps) {
     const [searchValue, setSearchValue] = useState("");
-    const [users, setUsers] = useState<any[]>([]);
+    const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
 

@@ -58,7 +58,7 @@ model Chat {
 model ChatUser {
   id       Int      @id @default(autoincrement())
   chatId   Int
-  chat     Chat     @relation(fields: [chatId], references: [id])
+  chat     Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
   userId   Int
   user     User     @relation(fields: [userId], references: [id])
   role     Role
@@ -68,7 +68,7 @@ model ChatUser {
 model Message {
   id        Int      @id @default(autoincrement())
   chatId    Int
-  chat      Chat     @relation(fields: [chatId], references: [id])
+  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
   senderId  Int
   user      User     @relation(fields: [senderId], references: [id])
   text      String

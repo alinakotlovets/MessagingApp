@@ -56,3 +56,73 @@ export async function createGroupChat(req:Request, res:Response){
     const chat =await chatService.createGroupChat("GROUP", name, usersId, currentUserId, avatar);
     res.status(201).json({chat});
 }
+
+export async function addUserToGroupChat(req:Request, res:Response){
+    const {chatId, usersId} = req.body;
+    const userId = getUserIdOrError(req);
+    const chatUsers = await chatService.getChatUsers(chatId);
+
+    const chatFromDB = await chatService.getChatById(chatId);
+    if (!chatFromDB) throw new AppError(400, "Chat with this id dont exist");
+    if(chatFromDB.type !== "GROUP") throw new AppError(400, "You cant add users to private chat");
+
+    const chatUser = chatUsers.find((u)=> u.userId === userId);
+    if(!chatUser) throw new AppError(403, "You are not user of this chat");
+    if(chatUser.role !=="ADMIN") throw new AppError(403, "You are not admin of this chat");
+    const existingUsersId = chatUsers.map((u)=>u.userId);
+    const filteredUsersId = usersId.filter((u:number) => !existingUsersId.includes(u));
+    if(filteredUsersId.length===0) throw new AppError(400, "All added users already in chat");
+
+    try {
+        const chat = await chatService.addUserToGroupChat(chatId, filteredUsersId);
+        res.status(200).json({chat});
+    } catch(err) {
+        console.error(err);
+        throw new AppError(500, "Something went wrong");
+    }
+}
+
+export async function deleteChat(req:Request, res:Response){
+    const rawChatId = req.params.chatId;
+    const chatId = Number(rawChatId);
+    if (Number.isNaN(chatId)) {
+        throw new AppError(400, "chat id is invalid");
+    }
+
+    const userId = getUserIdOrError(req);
+    const chatDb:any = await chatService.getChatById(chatId);
+    if(!chatDb) throw new AppError(401, "Chat with tis id not found");
+    const chatUser = chatDb.chatUsers.find((u: any) => u.userId === userId);
+    if (!chatUser) throw new AppError(403, "You are not member of this chat");
+
+    if (chatDb.type === "GROUP" && chatUser.role !== "ADMIN") {
+        throw new AppError(403, "You are not admin of this chat");
+    }
+
+    await chatService.deleteChat(chatId);
+    res.status(200).json({message: "Chat delete successfully"});
+}
+
+export async function removeUserFromGroupChat(req:Request, res: Response){
+    const chatId = req.params.chatId;
+    const rawUserId = req.params.userId;
+    const userId = Number(rawUserId);
+    if (Number.isNaN(chatId)) throw new AppError(400, "chat id is invalid");
+    if (isNaN(userId)) throw new AppError(400, "chat id is invalid");
+
+    const currentUserId = getUserIdOrError(req);
+    const chatDb:any = await chatService.getChatById(Number(chatId));
+    if(!chatDb) throw new AppError(401, "Chat with tis id not found");
+
+    if(currentUserId === userId){
+        await chatService.removeUserFromGroupChat(Number(chatId), userId);
+        return res.status(200).json({message:"user delete successfully"})
+    }
+    const chatUser = chatDb.chatUsers.find((u: any) => u.userId === userId);
+    if( chatUser.role === "ADMIN"){
+        await chatService.removeUserFromGroupChat(Number(chatId), userId);
+        return res.status(200).json({message:"user delete successfully"})
+    } else {
+        throw new AppError(403, "You dont have permition to delete this user")
+    }
+}

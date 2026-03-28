@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import Client from "../api/client.ts";
 import * as React from "react";
 import { getChatName } from "../utils/getChatName.ts";
+import type {User} from "../types/User.ts";
+import type {Chat} from "../types/Chat.ts";
 
 type Props = {
     setSelectedChatId: (id: number) => void;
     currentUser: { id: number; displayName: string; username: string; avatar: string | null } | null;
     setChats: (chat:any)=>void,
-    chats:any
+    chats:Chat[]
 };
 
 export function ChatList({ setSelectedChatId, currentUser, setChats, chats}: Props) {
@@ -15,7 +17,7 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats}: Pro
     const [errors, setErrors] = useState({ chatErrors: [], searchErrors: [] });
     const [isLoading, setIsLoading] = useState({ chatLoading: false, searchLoading: false });
     const [searchValue, setSearchValue] = useState("");
-    const [users, setUsers] = useState<[] | null>(null);
+    const [users, setUsers] = useState<User[] | null>(null);
 
     useEffect(() => {
         setIsLoading(prev => ({ ...prev, chatLoading: true }));

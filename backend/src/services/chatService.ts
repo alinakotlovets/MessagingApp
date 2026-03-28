@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma.js";
-import type {Chat} from "../../generated/prisma/client.js";
 import { Role, Type } from "../../generated/prisma/client.js";
+import type {Chat, ChatUser} from "../../generated/prisma/client.js";
 
 export const chatService = {
     createChat: async (type: Type, firstUserId: number, secondUserId: number): Promise<Chat> => {
@@ -107,5 +107,41 @@ export const chatService = {
                     }
                 }
             }
+        }),
+    addUserToGroupChat: async(chatId:number, usersId:number[]):Promise<Chat> =>
+        prisma.chat.update({
+            where:{id: chatId},
+            data: {
+                chatUsers:{
+                    create: [
+                        ...usersId.map((id:number)=>({userId: id, role: Role.USER}))
+                    ]
+                }
+            },
+            include: {
+                chatUsers: {
+                    include: {
+                        user: { select: { id: true, displayName: true, username: true, avatar: true } }
+                    }
+                }
+            }
+        }),
+    getChatUsers: async(chatId:number):Promise<ChatUser[]>=>
+        prisma.chatUser.findMany({where:{chatId}}),
+    removeUserFromGroupChat: async(chatId: number,userId:number) =>
+        prisma.chatUser.deleteMany({
+            where: {
+                chatId,
+                userId
+            }
+        }),
+    deleteChat: async(chatId: number)=>
+        prisma.chat.delete({where:{id:chatId}}),
+    updateGroupChat: async(chatId:number, name:string, avatar:string|null):Promise<Chat>=>
+        prisma.chat.update({
+            where:{
+                id:chatId
+            },
+            data:{name, avatar}
         })
 };

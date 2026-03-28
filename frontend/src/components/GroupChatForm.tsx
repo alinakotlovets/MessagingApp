@@ -20,7 +20,11 @@ export function GroupChatForm({currentUser, setSelectedChatId, setIsGroupModalOp
 
 
     function selectUser(user:User){
-       setSelectedUsers((prev)=>[...prev, user])
+       setSelectedUsers((prev: any) => {
+           const exists = prev.some((c: any) => c.id === user.id);
+           if (exists) return prev;
+           return [user, ...prev];
+       })
     }
 
     function removeSelectedUser(userId:number){

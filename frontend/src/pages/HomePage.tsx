@@ -44,8 +44,16 @@ function HomePage() {
             )}
             <button onClick={() => setIsGroupModalOpen(true)}>Create group chat</button>
             <button onClick={handleLogout}>Log out</button>
-            <ChatList setSelectedChatId={setSelectedChatId} currentUser={currentUser} chats={chats} setChats={setChats}/>
-            <ChatWindow selectedChatId={selectedChatId} currentUser={currentUser} />
+            <ChatList setSelectedChatId={setSelectedChatId}
+                      currentUser={currentUser}
+                      chats={chats}
+                      setChats={setChats}/>
+            <ChatWindow selectedChatId={selectedChatId}
+                        currentUser={currentUser}
+                        setSelectedChatId={setSelectedChatId}
+                        chats={chats}
+                        setChats={setChats}
+            />
         </div>
     )
 }

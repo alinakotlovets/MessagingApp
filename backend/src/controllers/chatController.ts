@@ -4,6 +4,7 @@ import {AppError} from "../utils/AppError.js";
 import {getUserIdOrError} from "../services/userHelpers.js";
 import {chatService} from "../services/chatService.js";
 import cloudinary from "../utils/cloudinary.js";
+import {Client} from "pg";
 
 export async function createPrivateChat(req:Request, res: Response){
     const {userId} = req.body;
@@ -104,25 +105,60 @@ export async function deleteChat(req:Request, res:Response){
 }
 
 export async function removeUserFromGroupChat(req:Request, res: Response){
-    const chatId = req.params.chatId;
+    const rawChatId = req.params.chatId;
     const rawUserId = req.params.userId;
     const userId = Number(rawUserId);
-    if (Number.isNaN(chatId)) throw new AppError(400, "chat id is invalid");
-    if (isNaN(userId)) throw new AppError(400, "chat id is invalid");
+    const chatId = Number(rawChatId);
+    if (isNaN(chatId)) throw new AppError(400, "chat id is invalid");
+    if (isNaN(userId)) throw new AppError(400, "user id is invalid");
 
     const currentUserId = getUserIdOrError(req);
     const chatDb:any = await chatService.getChatById(Number(chatId));
-    if(!chatDb) throw new AppError(401, "Chat with tis id not found");
+    if(!chatDb) throw new AppError(404, "Chat with tis id not found");
 
-    if(currentUserId === userId){
-        await chatService.removeUserFromGroupChat(Number(chatId), userId);
-        return res.status(200).json({message:"user delete successfully"})
+    const chatUser = chatDb.chatUsers.find((u: any) => u.userId === currentUserId);
+    if(!chatUser) throw new AppError(403,"User id is not member of this chat");
+    const isUserInChat = chatDb.chatUsers.find((u:any)=>u.userId === userId);
+    if(!isUserInChat)  throw new AppError(404,"User is not member of this chat");
+
+    const isRemovingSelf = currentUserId === userId;
+    const isAdmin = chatUser.role === "ADMIN";
+
+    if(isRemovingSelf && isAdmin) throw new AppError(400, "You cant delete yourself because you admin, if you want you can delete chat");
+    if(!isRemovingSelf && !isAdmin)  throw new AppError(403, "You dont have permission to delete user from chat");
+
+    await chatService.removeUserFromGroupChat(chatId, userId);
+    res.status(200).json({message:"user delete successfully"});
+}
+
+export async function editGroupChat(req:Request,res:Response){
+    const {name} = req.body;
+
+    const rawChatId = req.params.chatId;
+    const chatId = Number(rawChatId);
+    if (isNaN(chatId)) throw new AppError(400, "chat id is invalid");
+
+    const chatInDb:any = await chatService.getChatById(chatId);
+    if(!chatInDb) throw new AppError(404, "Chat with tis id not found");
+
+    const currentUserId = getUserIdOrError(req);
+    const chatUser = chatInDb.chatUsers.find((u: any) => u.userId === currentUserId);
+    if(!chatUser) throw new AppError(403,"User id is not member of this chat");
+    if(chatUser.role !== "ADMIN") throw new AppError(403, "You dont have permission to edit this chat because you not admin");
+
+    let avatar:string|null = null;
+    if(req.file){
+        const result = await cloudinary.uploader.upload(
+            `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+            {
+                folder: "messenger-group-chats"
+            }
+        );
+        avatar = result.secure_url;
     }
-    const chatUser = chatDb.chatUsers.find((u: any) => u.userId === userId);
-    if( chatUser.role === "ADMIN"){
-        await chatService.removeUserFromGroupChat(Number(chatId), userId);
-        return res.status(200).json({message:"user delete successfully"})
-    } else {
-        throw new AppError(403, "You dont have permition to delete this user")
-    }
+
+    if( avatar === null && chatInDb.avatar !== null) avatar = chatInDb.avatar;
+
+    const chat = await chatService.updateGroupChat(chatId, name, avatar);
+    res.status(200).json({chat});
 }

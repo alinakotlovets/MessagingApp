@@ -18,7 +18,6 @@ export function GroupChatForm({currentUser, setSelectedChatId, setIsGroupModalOp
     const [avatar, setAvatar] = useState<File | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
 
-
     function selectUser(user:User){
        setSelectedUsers((prev: any) => {
            const exists = prev.some((c: any) => c.id === user.id);

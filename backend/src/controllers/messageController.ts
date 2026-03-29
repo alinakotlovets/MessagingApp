@@ -29,10 +29,9 @@ export async function getLastMessages(req: Request, res:Response){
     }
     if(!cursorId || Number.isNaN(rawCursorId)) cursorId = null;
 
-    const chat = await chatService.getChatById(chatId);
+    const chat:any = await chatService.getChatById(chatId);
     if(chat){
         const userId = getUserIdOrError(req);
-        // @ts-ignore
         const chatUsers = chat.chatUsers.map((u:any)=>u.userId);
         const user = chatUsers.find((u: any)=>u === userId);
         if(!user){
@@ -42,4 +41,60 @@ export async function getLastMessages(req: Request, res:Response){
 
     const messages = await messageService.getLastMessages(chatId, cursorId);
     res.status(200).json({messages});
+}
+
+export async function deleteMessage(req:Request, res:Response){
+    const rawChatId = req.params.chatId;
+    const chatId = Number(rawChatId);
+    if(isNaN(chatId))  throw new AppError(400, "chat id is invalid");
+
+    const rawMessageId= req.params.messageId;
+    const messageId = Number(rawMessageId);
+    if(isNaN(messageId)) throw new AppError(400, "message id is invalid");
+
+    const chat:any = await chatService.getChatById(chatId);
+    if(!chat) throw new AppError(404, "Chat with this id not found");
+
+    const message = await messageService.getMessageById(messageId);
+    if(!message) throw new AppError(404, "Message with this id not found");
+
+    const currentUserId = getUserIdOrError(req);
+
+
+    const isUserMessageSender = message.senderId === currentUserId;
+    let isAdmin = false;
+    if(chat.type === "GROUP"){
+        const chatUser = chat.chatUsers.find((u:any)=>u.userId === currentUserId);
+        if(!chatUser) throw new AppError(403, "You dont have permission to delete this message")
+        if(chatUser.role === "ADMIN") isAdmin = true
+    }
+
+    if(!isUserMessageSender && !isAdmin) throw new AppError(403, "You dont have permission to delete this message");
+
+    await messageService.deleteMessage(messageId);
+    res.status(200).json({message: "Message deleted successfully"});
+}
+
+export async function editMessage(req:Request, res:Response){
+    const {text} = req.body;
+    const rawChatId = req.params.chatId;
+    const chatId = Number(rawChatId);
+    if(isNaN(chatId))  throw new AppError(400, "chat id is invalid");
+
+    const rawMessageId= req.params.messageId;
+    const messageId = Number(rawMessageId);
+    if(isNaN(messageId)) throw new AppError(400, "message id is invalid");
+
+    const chat:any = await chatService.getChatById(chatId);
+    if(!chat) throw new AppError(404, "Chat with this id not found");
+
+    const messageDb = await messageService.getMessageById(messageId);
+    if(!messageDb) throw new AppError(404, "Message with this id not found");
+    const currentUserId = getUserIdOrError(req);
+
+    const isUserMessageSender = messageDb.senderId === currentUserId;
+    if(!isUserMessageSender) throw new AppError(403, "You dont have permission to edit this message");
+    const message = await messageService.editMessage(messageId, text);
+
+    res.status(200).json({message});
 }

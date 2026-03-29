@@ -142,6 +142,16 @@ export const chatService = {
             where:{
                 id:chatId
             },
-            data:{name, avatar}
+            data:{
+                name,
+                avatar
+            },
+            include: {
+                chatUsers: {
+                    include: {
+                        user: { select: { id: true, displayName: true, username: true, avatar: true } }
+                    }
+                }
+            }
         })
 };

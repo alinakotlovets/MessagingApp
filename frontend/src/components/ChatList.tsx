@@ -20,17 +20,24 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats}: Pro
     const [users, setUsers] = useState<User[] | null>(null);
 
     useEffect(() => {
-        setIsLoading(prev => ({ ...prev, chatLoading: true }));
-        async function getUserChats() {
-            try {
-                const response = await Client("/chat/user", "GET");
-                if (response.errors) setErrors((prev: any) => ({ ...prev, chatErrors: response.errors }));
-                if (response.chats) setChats(response.chats);
-            } finally {
-                setIsLoading(prev => ({ ...prev, chatLoading: false }));
-            }
+        async function getUserChats(showLoading: boolean) {
+            if (showLoading) setIsLoading(prev => ({ ...prev, chatLoading: true }));
+            const response = await Client("/chat/user", "GET");
+            if (response.errors) setErrors((prev: any) => ({ ...prev, chatErrors: response.errors }));
+            if (response.chats) setChats(response.chats);
+            if (showLoading) setIsLoading(prev => ({ ...prev, chatLoading: false }));
         }
-        getUserChats();
+
+        getUserChats(true);
+
+
+        const intervalId = setInterval(()=>{
+            getUserChats(false);
+        },3000)
+
+        return () => {
+            clearInterval(intervalId);
+        };
     }, []);
 
     function handleClick(e: React.MouseEvent<HTMLLIElement>, chatId: number) {

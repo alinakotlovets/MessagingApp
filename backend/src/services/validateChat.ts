@@ -43,13 +43,6 @@ export const validateAddUserToGroupChat = [
         .notEmpty().withMessage("Chat id is required")
         .isInt().withMessage("Chat id must be a number"),
     body("usersId")
-        .customSanitizer((value) => {
-            try {
-                return JSON.parse(value);
-            } catch {
-                throw new Error("usersId must be a valid JSON array");
-            }
-        })
         .custom((value) => {
             if (!Array.isArray(value)) {
                 throw new Error("Users must be an array");
@@ -62,4 +55,11 @@ export const validateAddUserToGroupChat = [
             }
             return true;
         })
+]
+
+export const validateEditGroupChat = [
+    body("name")
+        .trim()
+        .notEmpty().withMessage("Chat name is required")
+        .isLength({ min: 1, max: 50 }).withMessage("Chat name must be 1-50 symbols")
 ]

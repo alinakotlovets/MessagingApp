@@ -42,4 +42,14 @@ export const messageService = {
             },
             take: 50
         }),
+    deleteMessage: async(messageId:number)=>
+        prisma.message.delete({where:{id:messageId}}),
+    editMessage: async(messageId:number, text:string):Promise<Message>=>
+        prisma.message.update({
+            where:{
+            id:messageId},
+            data:{text}
+        }),
+    getMessageById: async(messageId:number):Promise<Message | null>=>
+        prisma.message.findUnique({where:{id:messageId}})
 }

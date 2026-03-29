@@ -11,7 +11,8 @@ type Props ={
     setChat: (value: Chat|null)=> void,
     setSelectedChatId: (value: number| null)=>void,
     chats: Chat[],
-    setChats: (chat:any)=>void
+    setChats: (chat:any)=>void,
+    setIsEdit: (value:boolean)=>void
 }
 export function GroupChatInfo({
                                   chat,
@@ -20,7 +21,8 @@ export function GroupChatInfo({
                                   setChat,
                                   setSelectedChatId,
                                   chats,
-                                  setChats}:Props){
+                                  setChats,
+                                  setIsEdit}:Props){
 
     const [isAddUser, setIsAddUser]=useState(false);
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
@@ -51,6 +53,7 @@ export function GroupChatInfo({
     }
 
     async function deleteChat(chatId:number){
+        setErrors([]);
         const response = await Client(`/chat/${chatId}`, "DELETE");
         if(response.errors) setErrors(response.errors);
         if(response.message) {
@@ -60,6 +63,37 @@ export function GroupChatInfo({
             setSelectedChatId(null);
             setIsSettingsOpen(false);
         }
+    }
+
+    async function removeUserFromChat(chatId:number, userId:number){
+        setErrors([]);
+        const response = await Client(`/chat/${chatId}/user/${userId}`, "DELETE");
+        if(response.errors) setErrors(response.errors);
+        if (response.message){
+            const filteredChatUsers = chat.chatUsers.filter((u)=>u.userId !== userId);
+            setChat({...chat, chatUsers: filteredChatUsers})
+        }
+    }
+
+    async function leaveChat(chatId:number, userId:number){
+        setErrors([]);
+        const response = await Client(`/chat/${chatId}/user/${userId}`, "DELETE");
+        if(response.errors) setErrors(response.errors);
+        if (response.message){
+            const filteredChats = chats.filter((c)=>c.id !== chatId);
+            setChats(filteredChats);
+            setChat(null);
+            setSelectedChatId(null);
+            setIsSettingsOpen(false);
+        }
+    }
+
+    if (!currentUser) return null;
+
+
+    function handleEdit(){
+        setIsSettingsOpen(false);
+        setIsEdit(true);
     }
 
     return(
@@ -82,13 +116,6 @@ export function GroupChatInfo({
                         </>
                     )}
                     <UserSearch onSelect={selectUser}/>
-                    {errors.length>0 &&(
-                        <ul>
-                            {errors.map((e:string, i:number)=>(
-                                <li key={i}>{e}</li>
-                            ))}
-                        </ul>
-                    )}
                     <button onClick={addUsersToGroupChat}>Add Users</button>
                 </div>
                 </div>
@@ -97,24 +124,35 @@ export function GroupChatInfo({
             <h2>{chat.name}</h2>
             {admin && (currentUser?.id === admin.user.id) ? (
                 <div>
-                    <button>Edit chat</button>
+                    <button onClick={handleEdit}>Edit chat</button>
                     <button onClick={()=>deleteChat(chat.id)}>Delete chat</button>
                     <button onClick={(()=>setIsAddUser(true))}>Add user</button>
                 </div>
             ) :
                 (
                     <div>
-                        <button>Leave chat</button>
+                        <button onClick={()=>leaveChat(chat.id, currentUser.id)}>Leave chat</button>
                     </div>
-                )}
+                )
+            }
             <h3>Users:</h3>
             <ul>
                 {chat.chatUsers.map((cu)=>(
                     <li key={cu.id}>
                         <h3>{cu.user.displayName}</h3>
                         <h4>@{cu.user.username}</h4>
+                        {admin && (currentUser?.id === admin.user.id) &&(
+                            <button onClick={()=>removeUserFromChat(chat.id, cu.userId)}>Delete</button>
+                        )}
                     </li>))}
             </ul>
+            {errors.length>0 &&(
+                <ul>
+                    {errors.map((e:string, i:number)=>(
+                        <li key={i}>{e}</li>
+                    ))}
+                </ul>
+            )}
         </div>
 )
 }

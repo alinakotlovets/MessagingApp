@@ -17,6 +17,11 @@ enum Type {
   GROUP
 }
 
+enum MessageType {
+  MESSAGE
+  IMAGE
+}
+
 model User {
   id          Int        @id @default(autoincrement())
   displayName String
@@ -66,12 +71,13 @@ model ChatUser {
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   chatId    Int
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chat      Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
   senderId  Int
-  user      User     @relation(fields: [senderId], references: [id])
+  type      MessageType @default(MESSAGE)
+  user      User        @relation(fields: [senderId], references: [id])
   text      String
-  createdAt DateTime @default(now())
-  editedAt  DateTime @updatedAt
+  createdAt DateTime    @default(now())
+  editedAt  DateTime    @updatedAt
 }

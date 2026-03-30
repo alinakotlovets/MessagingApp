@@ -8,6 +8,7 @@ import {GroupChatInfo} from "./GroupChatInfo.tsx";
 import {PrivateChatInfo} from "./PrivateChatInfo.tsx";
 import {EditGroupChatForm} from "./EditGroupChatForm.tsx";
 import {ContextMenu} from "./ContextMenu.tsx";
+import {AddPhotoForm} from "./AddPhotoForm.tsx";
 
 type Props = {
     selectedChatId: number | null;
@@ -17,7 +18,11 @@ type Props = {
     chats:Chat[]
 };
 
-export function ChatWindow({ selectedChatId, currentUser, setSelectedChatId, setChats, chats}: Props) {
+export function ChatWindow({ selectedChatId,
+                               currentUser,
+                               setSelectedChatId,
+                               setChats,
+                               chats}: Props) {
 
     const [errors, setErrors] = useState<{
         chat: string[],
@@ -26,16 +31,17 @@ export function ChatWindow({ selectedChatId, currentUser, setSelectedChatId, set
     }>({chat: [], messages: [], sendMessage:[]});
     const [isLoading, setIsLoading] = useState({chat: false, messages:false});
     const [chat, setChat] = useState<Chat | null>(null);
-    const [messages, setMessages] = useState<Message[]>([])
     const [inputValue, setInputValue] = useState("");
     const [isInitialLoad, setIsInitialLoad] = useState<boolean|null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [hasMoreMessages, setHasMoreMessages] = useState(true);
+    const [messages, setMessages] = useState<Message[]>([])
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isEdit, setIsEdit] = useState(false);
     const [isAdmin, setIsAdmin] = useState<boolean| null>(null);
     const [contextMenuMessageId, setContextMenuMessageId] = useState<number | null>(null);
     const [editingMessageId, setEditingMessageId] =useState<number|null>(null);
+    const [isAddImage, setIsAddImage] = useState<boolean>(false);
 
     useEffect(() => {
         if (selectedChatId === null) return;
@@ -88,7 +94,8 @@ export function ChatWindow({ selectedChatId, currentUser, setSelectedChatId, set
         loadMessages();
 
         const intervalId = setInterval( async () => {
-            loadMessages()
+            loadMessages();
+            loadChat();
         }, 3000);
 
         return () => {
@@ -206,6 +213,11 @@ export function ChatWindow({ selectedChatId, currentUser, setSelectedChatId, set
         setContextMenuMessageId(messageId);
     }
 
+    function handleAddImage(e:React.MouseEvent<HTMLButtonElement>){
+        e.preventDefault();
+        setIsAddImage(true);
+    }
+
     function handleCloseEditMessage(){
         setContextMenuMessageId(null);
         setInputValue("");
@@ -310,10 +322,24 @@ export function ChatWindow({ selectedChatId, currentUser, setSelectedChatId, set
                                         />
                                     </div>
                                 )}
-                                <li key={message.id} onContextMenu={(e)=> handleOnContext(e, message.id)}>{message.text}</li>
+                                <li key={message.id} onContextMenu={(e)=>
+                                    handleOnContext(e, message.id)}>
+                                    {message.type === "MESSAGE" ?
+                                    (<h3>{message.text}</h3>) :
+                                    (<img src={message.text}/>)}
+                                </li>
                             </>
                         ))}
                     </ul>
+                )}
+
+                {isAddImage && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <button onClick={() => setIsAddImage(false)}>Close</button>
+                            <AddPhotoForm chat={chat} messages={messages} setMessages={setMessages} setIsAddImage={setIsAddImage}/>
+                        </div>
+                    </div>
                 )}
 
                 {!isLoading.messages && selectedChatId !== null && (
@@ -322,6 +348,7 @@ export function ChatWindow({ selectedChatId, currentUser, setSelectedChatId, set
                             <button onClick={handleCloseEditMessage}>X</button>
                         )}
                         <form onClick={(e)=>e.stopPropagation()} onSubmit={handleSubmit}>
+                            <button type="button" onClick={(e)=>handleAddImage(e)}>Add image</button>
                             <input type="text"
                                    name="text"
                                    value={inputValue}

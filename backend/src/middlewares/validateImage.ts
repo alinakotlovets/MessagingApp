@@ -1,7 +1,7 @@
 import type {Request, Response, NextFunction} from "express";
 import {AppError} from "../utils/AppError.js";
 
-export async function validateAvatar(req :Request, res: Response, next:NextFunction){
+export async function validateImage(req :Request, res: Response, next:NextFunction){
     const {file} = req;
     const maxSize = 5 * 1024 * 1024;
 

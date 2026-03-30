@@ -1,12 +1,12 @@
 import {prisma} from "../../lib/prisma.js";
-import type {Message} from "../../generated/prisma/client.js";
+import type {Message, MessageType} from "../../generated/prisma/client.js";
 
 
 export const messageService = {
-    addMessage: async(chatId: number, senderId: number, text: string): Promise<Message> =>
+    addMessage: async(chatId: number, senderId: number, text: string, type: MessageType): Promise<Message> =>
     { return prisma.$transaction(async (tx)=>{
         const message = await tx.message.create({
-            data:{chatId,senderId, text},
+            data:{chatId,senderId, text, type},
             include:{
                 user:{
                     select:{

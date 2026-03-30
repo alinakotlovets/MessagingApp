@@ -68,3 +68,10 @@ export const validateEmailVerifyCode = [
         .not().isAlpha().withMessage('Code must not contain any letters.')
 ]
 
+
+export const validateUserEdit = [
+    body("displayName")
+        .trim()
+        .notEmpty().withMessage("Display name is required")
+        .isLength({min: 2, max: 50}).withMessage("Display name should at least 2 symbols and no more than 50 symbols")
+]

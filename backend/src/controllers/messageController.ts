@@ -3,6 +3,7 @@ import {getUserIdOrError} from "../services/userHelpers.js";
 import {AppError} from "../utils/AppError.js";
 import {messageService} from "../services/messageService.js";
 import {chatService} from "../services/chatService.js";
+import cloudinary from "../utils/cloudinary.js";
 
 export async function addMessage(req:Request, res: Response){
     const {text} = req.body
@@ -14,7 +15,7 @@ export async function addMessage(req:Request, res: Response){
         throw new AppError(400, "chat id is invalid");
     }
 
-    const message = await messageService.addMessage(chatId, userId, text);
+    const message = await messageService.addMessage(chatId, userId, text, "MESSAGE");
     res.status(201).json({message})
 
 }
@@ -97,4 +98,34 @@ export async function editMessage(req:Request, res:Response){
     const message = await messageService.editMessage(messageId, text);
 
     res.status(200).json({message});
+}
+
+
+export async function addMessageImage(req:Request, res:Response){
+    const rawChatId = req.params.chatId;
+    const chatId = Number(rawChatId);
+    if(isNaN(chatId))  throw new AppError(400, "chat id is invalid");
+
+    const chat:any = await chatService.getChatById(chatId);
+    if(!chat) throw new AppError(404, "Chat with this id not found");
+
+    const userId = getUserIdOrError(req);
+    const chatUser = chat.chatUsers.find((u:any)=>u.userId === userId);
+    if(!chatUser) throw new AppError(403, "You are not user of this chat");
+
+    let image:string|null = null;
+    if(req.file){
+        const result = await cloudinary.uploader.upload(
+            `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+            {
+                folder: "messenger-messages"
+            }
+        );
+        image = result.secure_url;
+    }
+
+    if(!image) throw new AppError(400, "Image is required");
+
+    const message = await messageService.addMessage(chatId, userId, image, "IMAGE");
+    res.status(201).json({message});
 }

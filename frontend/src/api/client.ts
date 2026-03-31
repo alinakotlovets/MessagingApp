@@ -36,6 +36,6 @@ export default async function Client( link: string,
         } else if (e instanceof TypeError) {
             error = e.message;
         }
-        return {messages: [error]};
+        return {errors: [error]};
     }
 }

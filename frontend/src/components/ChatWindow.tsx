@@ -1,14 +1,15 @@
 import {useEffect, useState, useRef} from "react";
 import Client from "../api/client.ts";
 import * as React from "react";
-import {getChatName} from "../utils/getChatName.ts";
 import type {Chat} from "../types/Chat.ts";
-import type {Message} from "../types/Message.ts";
 import {GroupChatInfo} from "./GroupChatInfo.tsx";
 import {PrivateChatInfo} from "./PrivateChatInfo.tsx";
 import {EditGroupChatForm} from "./EditGroupChatForm.tsx";
-import {ContextMenu} from "./ContextMenu.tsx";
-import {AddPhotoForm} from "./AddPhotoForm.tsx";
+import {useChat} from "../hooks/useChat.ts";
+import {ChatHeader} from "./ChatHeader.tsx";
+import {MessageForm} from "./MessageForm.tsx";
+import {Messages} from "./Messages.tsx";
+import type {UiStateChatWindow} from "../types/UiStateChatWindow.ts";
 
 type Props = {
     selectedChatId: number | null;
@@ -24,86 +25,41 @@ export function ChatWindow({ selectedChatId,
                                setChats,
                                chats}: Props) {
 
-    const [errors, setErrors] = useState<{
-        chat: string[],
-        messages: string[],
-        sendMessage: string[]
-    }>({chat: [], messages: [], sendMessage:[]});
-    const [isLoading, setIsLoading] = useState({chat: false, messages:false});
-    const [chat, setChat] = useState<Chat | null>(null);
+
+
     const [inputValue, setInputValue] = useState("");
-    const [isInitialLoad, setIsInitialLoad] = useState<boolean|null>(null);
     const [isFetching, setIsFetching] = useState(false);
     const [hasMoreMessages, setHasMoreMessages] = useState(true);
-    const [messages, setMessages] = useState<Message[]>([])
-    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [isEdit, setIsEdit] = useState(false);
-    const [isAdmin, setIsAdmin] = useState<boolean| null>(null);
-    const [contextMenuMessageId, setContextMenuMessageId] = useState<number | null>(null);
+    const [uiState, setUiState] = useState<UiStateChatWindow>({
+        isSettingsOpen: false,
+        isEdit: false,
+        contextMenuMessageId: null,
+        isAddImage: false,
+    });
     const [editingMessageId, setEditingMessageId] =useState<number|null>(null);
-    const [isAddImage, setIsAddImage] = useState<boolean>(false);
+
+
+    const {
+        isInitialLoad,
+        setIsInitialLoad,
+        isLoading,
+        chat,
+        setChat,
+        messages,
+        setMessages,
+        isAdmin,
+        errors,
+        setErrors
+    } = useChat({
+        selectedChatId,
+        currentUser
+    });
+
 
     useEffect(() => {
-        if (selectedChatId === null) return;
-        setContextMenuMessageId(null);
-        setIsLoading({chat: true, messages: true});
-        setIsInitialLoad(true);
-        setChat(null);
-        setMessages([]);
-        setErrors({chat: [], messages: [], sendMessage:[]});
-        const controller = new AbortController();
-
-        async function loadChat(){
-                try {
-                    const chat = await Client(`/chat/${selectedChatId}`, "GET", undefined, controller.signal);
-                    if (chat.errors) setErrors((prev) => ({...prev, chat: chat.errors}));
-                    if (chat.chat && currentUser) {
-                        const userFromChat = chat.chat.chatUsers.find((u:any)=>u.userId === currentUser.id);
-                        setIsAdmin((userFromChat && userFromChat.role=== "ADMIN"));
-                        setChat(chat.chat);
-                    }
-                } catch {
-                    setErrors((prev)=>({...prev, chat:["Network error or request failed"]}))
-                }
-                finally {
-                    setIsLoading((prev) => ({...prev, chat: false}));
-                }
-        }
-
-        async function loadMessages() {
-                try {
-                    const msg = await Client(`/message/chat/${selectedChatId}`, "GET", undefined, controller.signal);
-                    if (msg.errors) setErrors((prev) => ({...prev, messages: msg.errors}));
-                    if (msg.messages)  setMessages((prev:any) => {
-                        const normalized:any = msg.messages.sort((a:any, b:any) => a.id - b.id);
-                        const merged = [...prev, ...normalized];
-                        const unique = merged.filter(
-                            (m, index, arr) =>
-                                arr.findIndex(x => x.id === m.id) === index
-                        );
-
-                        return unique;
-                    });
-                } catch {
-                    setErrors((prev)=>({...prev, messages:["Network error or request failed"]}))
-                } finally {
-                    setIsLoading((prev) => ({...prev, messages: false}));
-                }
-        }
-        loadChat();
-        loadMessages();
-
-        const intervalId = setInterval( async () => {
-            loadMessages();
-            loadChat();
-        }, 3000);
-
-        return () => {
-            controller.abort();
-            clearInterval(intervalId);
-        };
-
+        setUiState((prev)=>({...prev, сontextMenuMessageId: null}))
     }, [selectedChatId]);
+
 
     useEffect(() => {
         if (messages.length>0 && isInitialLoad){
@@ -201,7 +157,7 @@ export function ChatWindow({ selectedChatId,
                         {...prev, sendMessage: []}
                     ))
                     setEditingMessageId(null);
-                    setContextMenuMessageId(null);
+                    setUiState((prev)=>({...prev, сontextMenuMessageId: null}))
                 }
                 }
             }
@@ -210,37 +166,39 @@ export function ChatWindow({ selectedChatId,
 
     function handleOnContext(e: React.MouseEvent<HTMLLIElement>, messageId: number){
         e.preventDefault();
-        setContextMenuMessageId(messageId);
+        setUiState((prev)=>({...prev, contextMenuMessageId: messageId}));
     }
 
     function handleAddImage(e:React.MouseEvent<HTMLButtonElement>){
         e.preventDefault();
-        setIsAddImage(true);
+        setUiState((prev)=>({...prev, isAddImage: true}))
     }
 
     function handleCloseEditMessage(){
-        setContextMenuMessageId(null);
+        setUiState((prev)=>({...prev, contextMenuMessageId: null}))
         setInputValue("");
         setEditingMessageId(null);
     }
 
     return(
-        <div className="chat-window-box" onClick={()=>setContextMenuMessageId(null)}>
-            {isSettingsOpen && chat &&(
+        <div className="chat-window-box" onClick={()=>
+            setUiState((prev)=>({...prev, contextMenuMessageId: null}))
+           }>
+            {uiState.isSettingsOpen && chat &&(
                 <div className="modal-overlay">
                     {chat.type === "GROUP" ? (
                         <GroupChatInfo chat={chat}
-                                       setIsSettingsOpen={setIsSettingsOpen}
+                                       setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
                                        currentUser={currentUser}
                                        setChat={setChat}
                                        setSelectedChatId={setSelectedChatId}
                                        chats={chats}
                                        setChats={setChats}
-                                       setIsEdit={setIsEdit}
+                                       setIsEdit={(value: boolean) => setUiState(prev => ({ ...prev, isEdit: value }))}
                         />
                     ):(
                         <PrivateChatInfo chat={chat}
-                                         setIsSettingsOpen={setIsSettingsOpen}
+                                         setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
                                          setChat={setChat}
                                          setSelectedChatId={setSelectedChatId}
                                          chats={chats}
@@ -249,13 +207,13 @@ export function ChatWindow({ selectedChatId,
                     )}
                 </div>
             )}
-            {isEdit && chat &&(
+            {uiState.isEdit && chat &&(
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <button onClick={()=>setIsEdit(false)}>X</button>
+                        <button onClick={()=>setUiState((prev)=>({...prev, isEdit:false}))}>X</button>
                         <EditGroupChatForm chat={chat}
                                            setSelectedChatId={setSelectedChatId}
-                                           setIsEdit={setIsEdit}
+                                           setIsEdit={(value: boolean) => setUiState(prev => ({ ...prev, isEdit: value }))}
                                            setChats={setChats}
                                            chats={chats}
                                            setChat={setChat}
@@ -263,108 +221,37 @@ export function ChatWindow({ selectedChatId,
                     </div>
                 </div>
             )}
-            <div>
-            {isLoading.chat &&(<h2>Loading...</h2>)}
+            <ChatHeader isLoading={isLoading}
+                        errors={errors}
+                        selectedChatId={selectedChatId}
+                        chat={chat}
+                        currentUser={currentUser}
+                        setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}/>
 
-            {errors.chat.length>0 &&(
-                <ul>
-                    {errors.chat.map((e, index)=>(
-                        <li key={index}>{e}</li>
-                    ))}
-                </ul>
-            )}
+            <Messages messages={messages}
+                      isLoading={isLoading}
+                      errors={errors}
+                      selectedChatId={selectedChatId}
+                      contextMenuMessageId={uiState.contextMenuMessageId}
+                      setContextMenuMessageId={(value: number| null) => setUiState(prev => ({ ...prev, contextMenuMessageId: value }))}
+                      handleOnContext={handleOnContext}
+                      isAdmin={isAdmin}
+                      currentUser={currentUser}
+                      chat={chat}
+                      setMessages={setMessages}
+                      setInputValue={setInputValue}
+                      setEditingMessageId={setEditingMessageId}/>
 
-            {!isLoading.chat && selectedChatId === null &&(
-                <h2>Chat not chosen</h2>
-            )}
-
-            {!isLoading.chat && selectedChatId !== null && chat &&(
-                <div>
-                    <h2>Chat name: {getChatName(chat, currentUser)}</h2>
-                    {chat.type === "GROUP" ? ( <div>
-                            <h4>{chat.chatUsers.length} users</h4>
-                    </div>
-                    ): null}
-                    <button onClick={()=> setIsSettingsOpen(true)}>Settings</button>
-                </div>
-            )}
-            </div>
-            <div className="messages">
-                {isLoading.messages &&(<h2>Loading...</h2>)}
-
-                {errors.messages.length>0 &&(
-                    <ul>
-                        {errors.messages.map((e, index)=>(
-                            <li key={index}>{e}</li>
-                        ))}
-                    </ul>
-                )}
-
-                {!isLoading.messages && selectedChatId !== null && messages.length === 0 &&(
-                    <h2>There a no messages send one</h2>
-                )}
-
-                {!isLoading.messages && selectedChatId !== null && messages &&(
-                    <ul>
-                        {messages.map((message: any)=>(
-                            <>
-                                {contextMenuMessageId && message.id === contextMenuMessageId &&(
-                                    <div onClick={(e)=>e.stopPropagation()}>
-                                        <ContextMenu isAdmin={isAdmin}
-                                                     currentUser={currentUser}
-                                                     message={message}
-                                                     chat={chat}
-                                                     setContextMenuMessageId={setContextMenuMessageId}
-                                                     setMessages={setMessages}
-                                                     messages={messages}
-                                                     setInputValue={setInputValue}
-                                                     setEditingMessageId={setEditingMessageId}
-                                        />
-                                    </div>
-                                )}
-                                <li key={message.id} onContextMenu={(e)=>
-                                    handleOnContext(e, message.id)}>
-                                    {message.type === "MESSAGE" ?
-                                    (<h3>{message.text}</h3>) :
-                                    (<img src={message.text}/>)}
-                                </li>
-                            </>
-                        ))}
-                    </ul>
-                )}
-
-                {isAddImage && (
-                    <div className="modal-overlay">
-                        <div className="modal-content">
-                            <button onClick={() => setIsAddImage(false)}>Close</button>
-                            <AddPhotoForm chat={chat} messages={messages} setMessages={setMessages} setIsAddImage={setIsAddImage}/>
-                        </div>
-                    </div>
-                )}
-
-                {!isLoading.messages && selectedChatId !== null && (
-                    <>
-                        {editingMessageId &&(
-                            <button onClick={handleCloseEditMessage}>X</button>
-                        )}
-                        <form onClick={(e)=>e.stopPropagation()} onSubmit={handleSubmit}>
-                            <button type="button" onClick={(e)=>handleAddImage(e)}>Add image</button>
-                            <input type="text"
-                                   name="text"
-                                   value={inputValue}
-                                   onChange={(e)=>{setInputValue(e.target.value)}}/>
-                            <button type="submit">Send</button>
-                            {errors.sendMessage.length >0 &&(
-                                <ul>
-                                    {errors.sendMessage.map((e,index)=>(
-                                        <li key={index}>{e}</li>
-                                    ))}
-                                </ul>
-                            )}
-                        </form>
-                    </>
-                )}
-            </div>
+            <MessageForm chat={chat}
+                         isAddImage={uiState.isAddImage}
+                         setIsAddImage={(value: boolean) => setUiState(prev => ({ ...prev, isAddImage: value }))}
+                         selectedChatId={selectedChatId}
+                         isLoading={isLoading}
+                         inputValue={inputValue}
+                         setInputValue={setInputValue}
+                         errors={errors}
+                         handlers={{ handleSubmit, handleAddImage, handleCloseEditMessage }}
+                         messageState={{ messages, setMessages, editingMessageId }}/>
         </div>
     )
 }

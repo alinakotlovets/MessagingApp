@@ -1,9 +1,14 @@
 import { prisma } from "../../lib/prisma.js";
 import { Role, Type } from "../../generated/prisma/client.js";
-import type {Chat, ChatUser} from "../../generated/prisma/client.js";
+import type { Chat, ChatUser, User } from "../../generated/prisma/client.js";
+import {chatWithUsersInclude} from "../utils/chatWithUsersInclude.js";
+type ChatWithUsers = Chat & {
+    chatUsers: (ChatUser & { user: Pick<User, 'id' | 'displayName' | 'username' | 'avatar'> })[]
+};
+
 
 export const chatService = {
-    createChat: async (type: Type, firstUserId: number, secondUserId: number): Promise<Chat> => {
+    createChat: async (type: Type, firstUserId: number, secondUserId: number): Promise<ChatWithUsers> => {
         return prisma.chat.create({
                 data: {
                     type,
@@ -14,64 +19,25 @@ export const chatService = {
                         ]
                     }
                 },
-                include:{
-                 chatUsers: {
-                     include: {
-                         user: {
-                             select: {
-                                 id: true,
-                                 displayName: true,
-                                 avatar: true,
-                                 username: true
-                             }
-                         }
-                     }
-                 }
-                }
+                include:chatWithUsersInclude
             });
     },
-    getUserChats: async (userId: number):Promise <Chat[]> =>
+    getUserChats: async (userId: number):Promise <ChatWithUsers[]> =>
         await prisma.chat.findMany({
             where: {
                 chatUsers: {
                     some: {userId}
                 }},
-            include:{
-                chatUsers: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                displayName: true,
-                                avatar: true,
-                                username: true
-                            }
-                        }
-                    }
-                }
-            }
+            include: chatWithUsersInclude
         }),
-    getChatById: async(chatId: number):Promise <Chat | null> =>
+    getChatById: async(chatId: number):Promise <ChatWithUsers | null> =>
         await prisma.chat.findUnique({
             where: {
                 id: chatId
             },
-            include:{
-                chatUsers: {
-                    include: {
-                        user: {
-                            select: {
-                                id: true,
-                                displayName: true,
-                                avatar: true,
-                                username: true
-                            }
-                        }
-                    }
-                }
-            }
+            include: chatWithUsersInclude
         }),
-    existingChat: async(firstUserId: number, secondUserId:number):Promise<Chat| null> =>
+    existingChat: async(firstUserId: number, secondUserId:number):Promise<ChatWithUsers| null> =>
         await prisma.chat.findFirst({
             where: {
                 type: "PRIVATE",
@@ -84,9 +50,9 @@ export const chatService = {
                     }
                 }
             },
-            include: { chatUsers: true }
+            include: chatWithUsersInclude
         }),
-    createGroupChat: async(type:Type, name:string, usersId:number[], currentUserId: number, avatar: string|null):Promise<Chat> =>
+    createGroupChat: async(type:Type, name:string, usersId:number[], currentUserId: number, avatar: string|null):Promise<ChatWithUsers> =>
         await prisma.chat.create({
             data:{
                 type,
@@ -100,15 +66,9 @@ export const chatService = {
                 }
 
             },
-            include: {
-                chatUsers: {
-                    include: {
-                        user: { select: { id: true, displayName: true, username: true, avatar: true } }
-                    }
-                }
-            }
+            include: chatWithUsersInclude
         }),
-    addUserToGroupChat: async(chatId:number, usersId:number[]):Promise<Chat> =>
+    addUserToGroupChat: async(chatId:number, usersId:number[]):Promise<ChatWithUsers> =>
         prisma.chat.update({
             where:{id: chatId},
             data: {
@@ -118,13 +78,7 @@ export const chatService = {
                     ]
                 }
             },
-            include: {
-                chatUsers: {
-                    include: {
-                        user: { select: { id: true, displayName: true, username: true, avatar: true } }
-                    }
-                }
-            }
+            include: chatWithUsersInclude
         }),
     getChatUsers: async(chatId:number):Promise<ChatUser[]>=>
         prisma.chatUser.findMany({where:{chatId}}),
@@ -146,12 +100,6 @@ export const chatService = {
                 name,
                 avatar
             },
-            include: {
-                chatUsers: {
-                    include: {
-                        user: { select: { id: true, displayName: true, username: true, avatar: true } }
-                    }
-                }
-            }
+            include: chatWithUsersInclude
         })
 };

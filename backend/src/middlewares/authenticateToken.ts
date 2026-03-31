@@ -1,3 +1,4 @@
+import "dotenv/config"
 import type {Request, Response, NextFunction} from "express";
 import jwt from "jsonwebtoken";
 import {AppError} from "../utils/AppError.js";

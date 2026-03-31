@@ -1,19 +1,19 @@
 import {prisma} from "../../lib/prisma.js";
-import type {Message, MessageType} from "../../generated/prisma/client.js";
-
+import type {Message, User, MessageType} from "../../generated/prisma/client.js";
+import {publicUserSelect} from "../utils/publicUserSelect.js";
+type MessageWithUser = Message & {
+    user: Pick<User, 'id' | 'displayName' | 'username' | 'avatar'>
+};
 
 export const messageService = {
-    addMessage: async(chatId: number, senderId: number, text: string, type: MessageType): Promise<Message> =>
+    addMessage: async(chatId: number, senderId: number, text: string, type: MessageType): Promise<MessageWithUser> =>
     { return prisma.$transaction(async (tx)=>{
         const message = await tx.message.create({
             data:{chatId,senderId, text, type},
             include:{
                 user:{
-                    select:{
-                        id: true,
-                        displayName: true,
-                        avatar: true
-                    }}
+                    select: publicUserSelect
+                }
             }
         });
         await tx.chat.update({where:{id: chatId}, data:{
@@ -24,18 +24,14 @@ export const messageService = {
             }})
         return message
     })},
-    getLastMessages: async(chatId: number, cursorId: number | null): Promise <Message[]> =>
+    getLastMessages: async(chatId: number, cursorId: number | null): Promise <MessageWithUser[]> =>
         prisma.message.findMany({where:{
                 chatId,
                 ...(cursorId ? {id: {lt: cursorId}} :{})
             },
             include:{
             user:{
-                select:{
-                    id: true,
-                    displayName: true,
-                    avatar: true
-                }}
+                select:publicUserSelect}
             },
             orderBy: {
                 id: "desc"
@@ -50,6 +46,12 @@ export const messageService = {
             id:messageId},
             data:{text}
         }),
-    getMessageById: async(messageId:number):Promise<Message | null>=>
-        prisma.message.findUnique({where:{id:messageId}})
+    getMessageById: async(messageId:number):Promise<MessageWithUser | null>=>
+        prisma.message.findUnique({where: {id:messageId},
+                include:{
+                user:{
+                    select:publicUserSelect}
+            }
+        }
+        )
 }

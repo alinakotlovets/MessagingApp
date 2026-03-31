@@ -1,6 +1,7 @@
 import {prisma} from "../../lib/prisma.js";
 import type {Code, User} from "../../generated/prisma/client.js"
 import type {PublicUser} from "../types/PublicUser.js";
+import {publicUserSelect} from "../utils/publicUserSelect.js";
 export const userServices = {
     addUser: async (displayName: string, username: string, email: string, avatar: string | null, password: string) :Promise<User> =>
         prisma.user.create({data: {displayName, username, email, avatar, password}}),
@@ -28,12 +29,7 @@ export const userServices = {
                     contains: username,
                     mode: 'insensitive'
                 }
-            }, select:{
-                    id: true,
-                    username: true,
-                    displayName:true,
-                    avatar:true
-            },
+            }, select: publicUserSelect,
                 orderBy: {
                     username: "asc"
                 },
@@ -41,9 +37,9 @@ export const userServices = {
             }
         ),
     updateUser: async(userId:number ,displayName:string,avatar:string|null):Promise<PublicUser> =>
-        prisma.user.update({where:{id:userId}, data:{displayName, avatar}, select:{id:true, displayName:true, username:true, avatar:true}}),
+        prisma.user.update({where:{id:userId}, data:{displayName, avatar}, select:publicUserSelect}),
     getUserInfo: async (userId :number):Promise<PublicUser | null> =>
-        prisma.user.findUnique({where:{id:userId}, select:{id:true, displayName:true, username:true, avatar:true}})
+        prisma.user.findUnique({where:{id:userId}, select:publicUserSelect})
 }
 
 export const verifyEmailServices = {

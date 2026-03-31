@@ -1,3 +1,4 @@
+import "dotenv/config"
 import sgMail from "@sendgrid/mail";
 import {AppError} from "../utils/AppError.js";
 

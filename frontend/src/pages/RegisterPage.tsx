@@ -45,7 +45,7 @@ function RegisterPage(){
         } else {
             setErrors([]);
             window.localStorage.setItem("token", `${response.token}`);
-            navigate("/verify");
+            navigate("/verify-email");
         }
     }
 

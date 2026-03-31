@@ -2,7 +2,7 @@ import type {Request, Response} from "express";
 import {userServices} from "../services/userService.js";
 import {AppError} from "../utils/AppError.js";
 import {getUserIdOrError} from "../services/userHelpers.js";
-import cloudinary from "../utils/cloudinary.js";
+import {uploadImage} from "../utils/uploadImage.js";
 
 export async function searchUsers(req: Request, res:Response){
     const username = req.query.username;
@@ -24,16 +24,7 @@ export async function updateUser(req:Request, res:Response){
     if(currentUserId!== userId) throw new AppError(403, "You cant edit other users");
 
 
-    let avatar:string|null = null;
-    if(req.file){
-        const result = await cloudinary.uploader.upload(
-            `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-            {
-                folder: "messenger-group-chats"
-            }
-        );
-        avatar = result.secure_url;
-    }
+    let avatar= await uploadImage(req.file, "messenger-users");
     if( avatar === null && userInDb.avatar !== null) avatar = userInDb.avatar;
 
     const user = await userServices.updateUser(userId, displayName, avatar);

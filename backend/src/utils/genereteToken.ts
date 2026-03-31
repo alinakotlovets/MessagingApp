@@ -1,3 +1,4 @@
+import "dotenv/config"
 import jwt from "jsonwebtoken";
 import {AppError} from "./AppError.js";
 import type {User} from "../../generated/prisma/client.js";

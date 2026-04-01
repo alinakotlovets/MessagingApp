@@ -1,15 +1,16 @@
 import {useEffect, useState, useRef} from "react";
-import Client from "../api/client.ts";
+import Client from "../../api/client.ts";
 import * as React from "react";
-import type {Chat} from "../types/Chat.ts";
-import {GroupChatInfo} from "./GroupChatInfo.tsx";
-import {PrivateChatInfo} from "./PrivateChatInfo.tsx";
-import {EditGroupChatForm} from "./EditGroupChatForm.tsx";
-import {useChat} from "../hooks/useChat.ts";
+import "../ui/Modal.css"
+import type {Chat} from "../../types/Chat.ts";
+import {GroupChatInfo} from "../Chat/GroupChatInfo.tsx";
+import {PrivateChatInfo} from "../Chat/PrivateChatInfo.tsx";
+import {EditGroupChatForm} from "../Chat/EditGroupChatForm.tsx";
+import {useChat} from "../../hooks/useChat.ts";
 import {ChatHeader} from "./ChatHeader.tsx";
 import {MessageForm} from "./MessageForm.tsx";
 import {Messages} from "./Messages.tsx";
-import type {UiStateChatWindow} from "../types/UiStateChatWindow.ts";
+import type {UiStateChatWindow} from "../../types/UiStateChatWindow.ts";
 
 type Props = {
     selectedChatId: number | null;

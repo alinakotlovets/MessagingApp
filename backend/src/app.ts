@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 
-app.use("/user", userRouter);
+app.use("/User", userRouter);
 app.use("/message", messageRouter);
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);

@@ -1,8 +1,8 @@
-import Client from "../api/client.ts";
-import type {Chat} from "../types/Chat.ts";
+import Client from "../../api/client.ts";
+import type {Chat} from "../../types/Chat.ts";
 import {useState} from "react";
 import * as React from "react";
-import type {Message} from "../types/Message.ts";
+import type {Message} from "../../types/Message.ts";
 
 type Props={
     chat: Chat | null,

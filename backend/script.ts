@@ -9,7 +9,7 @@ async function main() {
             password: "12345Abv"
             }
     });
-    console.log("Created user:", user);
+    console.log("Created User:", user);
 
     const allUsers = await prisma.user.findMany({
     });

@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
-import Client from "../api/client.ts";
+import Client from "../../api/client.ts";
 type UserSearchProps = {
     onSelect: (user: any) => void;
 };
-import type {User} from "../types/User.ts";
+import type {User} from "../../types/User.ts";
 
 export function UserSearch({onSelect}:UserSearchProps) {
     const [searchValue, setSearchValue] = useState("");

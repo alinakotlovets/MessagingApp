@@ -1,7 +1,7 @@
-import type {User} from "../types/User.ts";
+import type {User} from "../../types/User.ts";
 import {useState} from "react";
 import * as React from "react";
-import Client from "../api/client.ts";
+import Client from "../../api/client.ts";
 
 type Props = {
     currentUser: User | null,

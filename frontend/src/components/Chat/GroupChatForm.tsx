@@ -1,8 +1,8 @@
 import {useState} from "react";
-import {UserSearch} from "./UserSearch.tsx";
-import type {User} from "../types/User.ts";
+import {UserSearch} from "../ChatList/UserSearch.tsx";
+import type {User} from "../../types/User.ts";
 import * as React from "react";
-import Client from "../api/client.ts";
+import Client from "../../api/client.ts";
 
 
 type Props = {

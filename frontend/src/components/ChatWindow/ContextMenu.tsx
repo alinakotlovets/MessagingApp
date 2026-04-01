@@ -1,6 +1,6 @@
-import type {User} from "../types/User.ts";
-import type {Message} from "../types/Message.ts";
-import Client from "../api/client.ts";
+import type {User} from "../../types/User.ts";
+import type {Message} from "../../types/Message.ts";
+import Client from "../../api/client.ts";
 import {useState} from "react";
 import * as React from "react";
 
@@ -40,10 +40,6 @@ export function ContextMenu({
         }
     }
 
-    function isErrors(){
-        if(errors.length > 0) return (<ul> {errors.map((e, i) => (
-                    <li key={i}>{e}</li> ))} </ul>)
-    }
 
     function editUser(e: React.MouseEvent<HTMLButtonElement>){
         e.stopPropagation()
@@ -52,25 +48,20 @@ export function ContextMenu({
         setEditingMessageId(message.id);
     }
 
+    const isSender = currentUser.id === message.senderId;
 
+    const canEdit = isSender && message.type !== "IMAGE";
+    const canDelete = isSender || (isAdmin=== true && !isSender);
 
-    if(currentUser.id === message.senderId){
-        return (
+    return (
             <div>
-                <button onClick={(e)=>editUser(e)}>Edit message</button>
-                <button onClick={deleteUser}>Delete message</button>
-                {isErrors()}
+                {canEdit && <button onClick={editUser}>Edit message</button>}
+                {canDelete && <button onClick={deleteUser}>Delete message</button>}
+                {errors.length > 0 && (
+                    <ul>
+                        {errors.map((e, i) => <li key={i}>{e}</li>)}
+                    </ul>
+                )}
             </div>
         )
-    }
-    if(isAdmin && currentUser.id !== message.senderId){
-        return (
-            <div>
-                <button onClick={deleteUser}>Delete message</button>
-                {isErrors()}
-            </div>
-        )
-    }
-
-    return  null;
 }

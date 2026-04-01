@@ -1,12 +1,12 @@
-import {ChatList} from "../components/ChatList.tsx";
-import {ChatWindow} from "../components/ChatWindow.tsx";
-import "../HomePage.css"
+import {ChatList} from "../components/ChatList/ChatList.tsx";
+import {ChatWindow} from "../components/ChatWindow/ChatWindow.tsx";
+import "./HomePage.css"
+import {Modal} from "../components/ui/Modal.tsx";
 import {useEffect, useState} from "react";
-import {GroupChatForm} from "../components/GroupChatForm.tsx";
+import {GroupChatForm} from "../components/Chat/GroupChatForm.tsx";
 import type {User} from "../types/User.ts";
 import Client from "../api/client.ts";
-import {EditUserModal} from "../components/EditUserForm.tsx";
-import {UserMenu} from "../components/UserMenu.tsx";
+import {EditUserModal} from "../components/User/EditUserForm.tsx";
 function HomePage() {
 
     const [selectedChatId, setSelectedChatId] = useState<number | null>(null);
@@ -14,13 +14,12 @@ function HomePage() {
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
     const [chats, setChats] = useState<any[]>([]);
     const [isEditUser, setIsEditUser] = useState<boolean>(false);
-    const [isUserMenu, setIsUserMenu] = useState<boolean>(false);
 
 
     useEffect(() => {
         async function getCurrentUser(){
                 try {
-                    const user = await Client("/user", "GET");
+                    const user = await Client("/User", "GET");
                     if(user.user) setCurrentUser(user.user);
 
                 } catch {
@@ -34,39 +33,28 @@ function HomePage() {
     return (
         <div className="content-box">
             {isGroupModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => setIsGroupModalOpen(false)}>Close</button>
-                        <GroupChatForm currentUser={currentUser}
-                                       setSelectedChatId={setSelectedChatId}
-                                       setIsGroupModalOpen={setIsGroupModalOpen}
-                                       setChats={setChats}/>
-                    </div>
-                </div>
+                <Modal onClose={()=>setIsGroupModalOpen(false)} closeOnOverlayClick={false}>
+                    <GroupChatForm
+                        currentUser={currentUser}
+                        setSelectedChatId={setSelectedChatId}
+                        setIsGroupModalOpen={setIsGroupModalOpen}
+                        setChats={setChats}
+                    />
+                </Modal>
             )}
             {isEditUser && (
-                <div className="modal-overlay">
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <button onClick={() => setIsEditUser(false)}>Close</button>
-                        <EditUserModal currentUser={currentUser}
-                                       setCurrentUser={setCurrentUser}
-                                       setIsEditUser={setIsEditUser}/>
-                    </div>
-                </div>
-            )}
-            {isUserMenu &&(
-                <UserMenu setIsEditUser={setIsEditUser}
-                          setIsGroupModalOpen={setIsGroupModalOpen}
-                          setIsUserMenu={setIsUserMenu}/>
-            )}
-
-            {!isUserMenu &&(
-                <button onClick={()=>setIsUserMenu(true)}>Menu</button>
+                <Modal onClose={() => setIsEditUser(false)} closeOnOverlayClick={false}>
+                <EditUserModal currentUser={currentUser}
+                    setCurrentUser={setCurrentUser}
+                    setIsEditUser={setIsEditUser}/>
+                </Modal>
             )}
             <ChatList setSelectedChatId={setSelectedChatId}
                       currentUser={currentUser}
                       chats={chats}
-                      setChats={setChats}/>
+                      setChats={setChats}
+                      setIsEditUser={setIsEditUser}
+                      setIsGroupModalOpen={setIsGroupModalOpen}/>
             <ChatWindow selectedChatId={selectedChatId}
                         currentUser={currentUser}
                         setSelectedChatId={setSelectedChatId}

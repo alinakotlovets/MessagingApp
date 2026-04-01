@@ -1,0 +1,40 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    background-color: rgb(33, 33, 33, 1);
+    color: rgb(255, 255, 255, 1);
+}
+
+
+.content-box{
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    width: 100%;
+    height: 100vh;
+}
+
+.chat-window-box{
+    flex: 2;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    height: 100%
+}
+
+.messages{
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}

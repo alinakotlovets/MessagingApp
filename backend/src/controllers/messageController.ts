@@ -91,7 +91,7 @@ export async function addMessageImage(req:Request, res:Response){
 
     const userId = getUserIdOrError(req);
     const chatUser = chat.chatUsers.find((u:ChatUser)=>u.userId === userId);
-    if(!chatUser) throw new AppError(403, "You are not user of this chat");
+    if(!chatUser) throw new AppError(403, "You are not User of this chat");
 
     const image = await uploadImage(req.file, "messenger-messages");
 

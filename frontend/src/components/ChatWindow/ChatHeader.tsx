@@ -1,6 +1,6 @@
-import {getChatName} from "../utils/getChatName.ts";
-import type {Chat} from "../types/Chat.ts";
-import type {User} from "../types/User.ts";
+import {getChatInfo} from "../../utils/getChatInfo.ts";
+import type {Chat} from "../../types/Chat.ts";
+import type {User} from "../../types/User.ts";
 
 
 type Props = {
@@ -31,7 +31,7 @@ export function ChatHeader({isLoading, errors, selectedChatId, chat, currentUser
 
             {!isLoading.chat && selectedChatId !== null && chat &&(
                 <div>
-                    <h2>Chat name: {getChatName(chat, currentUser)}</h2>
+                    <h2>Chat name: {getChatInfo(chat, currentUser)}</h2>
                     {chat.type === "GROUP" ? ( <div>
                             <h4>{chat.chatUsers.length} users</h4>
                         </div>

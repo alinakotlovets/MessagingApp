@@ -1,7 +1,8 @@
 import {AddPhotoForm} from "./AddPhotoForm.tsx";
-import type {Chat} from "../types/Chat.ts";
-import type {Message} from "../types/Message.ts";
+import type {Chat} from "../../types/Chat.ts";
+import type {Message} from "../../types/Message.ts";
 import * as React from "react";
+import "../ui/Modal.css"
 
 type MessageFormProps = {
     chat: Chat | null;

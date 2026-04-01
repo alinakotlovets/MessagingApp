@@ -1,6 +1,7 @@
-import type {Chat} from "../types/Chat.ts";
+import type {Chat} from "../../types/Chat.ts";
 import {useState} from "react";
-import Client from "../api/client.ts";
+import Client from "../../api/client.ts";
+import "../ui/Modal.css"
 
 type Props ={
     chat: Chat,

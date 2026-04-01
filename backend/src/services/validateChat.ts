@@ -27,11 +27,11 @@ export const validateGroupChat = [
             }
 
             if (value.length < 1) {
-                throw new Error("Need at least one user");
+                throw new Error("Need at least one User");
             }
 
             if (!value.every(id => typeof id === "number")) {
-                throw new Error("All user IDs must be numbers");
+                throw new Error("All User IDs must be numbers");
             }
 
             return true;
@@ -48,10 +48,10 @@ export const validateAddUserToGroupChat = [
                 throw new Error("Users must be an array");
             }
             if (value.length < 1) {
-                throw new Error("Need at least one user");
+                throw new Error("Need at least one User");
             }
             if (!value.every(id => typeof id === "number")) {
-                throw new Error("All user IDs must be numbers");
+                throw new Error("All User IDs must be numbers");
             }
             return true;
         })

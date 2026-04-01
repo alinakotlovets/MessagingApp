@@ -1,8 +1,8 @@
-import type {Chat} from "../types/Chat.ts";
+import type {Chat} from "../../types/Chat.ts";
 import {useState} from "react";
-import {UserSearch} from "./UserSearch.tsx";
-import type {User} from "../types/User.ts";
-import Client from "../api/client.ts";
+import {UserSearch} from "../ChatList/UserSearch.tsx";
+import type {User} from "../../types/User.ts";
+import Client from "../../api/client.ts";
 
 type Props ={
     chat: Chat,
@@ -46,7 +46,7 @@ export function GroupChatInfo({
     async function addUsersToGroupChat() {
         setErrors([]);
         const usersId = selectedUsers.map((user)=>user.id);
-        const updatedChat = await Client("/chat/group/user", "PUT", JSON.stringify({chatId: chat.id, usersId }));
+        const updatedChat = await Client("/chat/group/User", "PUT", JSON.stringify({chatId: chat.id, usersId }));
         if(updatedChat.errors) setErrors(updatedChat.errors);
         if(updatedChat.chat) setChat(updatedChat.chat);
         setIsAddUser(false);

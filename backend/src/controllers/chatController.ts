@@ -88,10 +88,10 @@ export async function removeUserFromGroupChat(req:Request, res: Response){
     const isAdmin = chatUser.role === "ADMIN";
 
     if(isRemovingSelf && isAdmin) throw new AppError(400, "You cant delete yourself because you admin, if you want you can delete chat");
-    if(!isRemovingSelf && !isAdmin)  throw new AppError(403, "You dont have permission to delete user from chat");
+    if(!isRemovingSelf && !isAdmin)  throw new AppError(403, "You dont have permission to delete User from chat");
 
     await chatService.removeUserFromGroupChat(chatId, userId);
-    res.status(200).json({message:"user delete successfully"});
+    res.status(200).json({message:"User delete successfully"});
 }
 
 export async function editGroupChat(req:Request,res:Response){

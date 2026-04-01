@@ -1,28 +1,34 @@
 import { useEffect, useState } from "react";
-import Client from "../api/client.ts";
+import Client from "../../api/client.ts";
 import * as React from "react";
-import { getChatName } from "../utils/getChatName.ts";
-import type {User} from "../types/User.ts";
-import type {Chat} from "../types/Chat.ts";
+import type {User} from "../../types/User.ts";
+import type {Chat} from "../../types/Chat.ts";
+import {UserMenu} from "../User/UserMenu.tsx";
+import menuIcon from "../../assets/menu-icon.png";
+import {ChatListItem} from "./ChatListItem.tsx";
+import "./ChatList.css"
 
 type Props = {
     setSelectedChatId: (id: number) => void;
     currentUser: { id: number; displayName: string; username: string; avatar: string | null } | null;
     setChats: (chat:any)=>void,
-    chats:Chat[]
+    chats:Chat[],
+    setIsEditUser: (value: boolean)=>void,
+    setIsGroupModalOpen: (value:boolean)=>void,
 };
 
-export function ChatList({ setSelectedChatId, currentUser, setChats, chats}: Props) {
+export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setIsEditUser, setIsGroupModalOpen}: Props) {
 
     const [errors, setErrors] = useState({ chatErrors: [], searchErrors: [] });
     const [isLoading, setIsLoading] = useState({ chatLoading: false, searchLoading: false });
     const [searchValue, setSearchValue] = useState("");
     const [users, setUsers] = useState<User[] | null>(null);
+    const [isUserMenu, setIsUserMenu] = useState<boolean>(false);
 
     useEffect(() => {
         async function getUserChats(showLoading: boolean) {
             if (showLoading) setIsLoading(prev => ({ ...prev, chatLoading: true }));
-            const response = await Client("/chat/user", "GET");
+            const response = await Client("/chat/User", "GET");
             if (response.errors) setErrors((prev: any) => ({ ...prev, chatErrors: response.errors }));
             if (response.chats) setChats(response.chats);
             if (showLoading) setIsLoading(prev => ({ ...prev, chatLoading: false }));
@@ -93,9 +99,22 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats}: Pro
 
     return (
         <div className="chat-list-box">
-            <h2>Chat list</h2>
-            <form>
+
+            {isUserMenu &&(
+                <UserMenu  setIsEditUser={setIsEditUser}
+                          setIsGroupModalOpen={setIsGroupModalOpen}
+                          setIsUserMenu={setIsUserMenu}
+                          currentUser={currentUser}
+                />
+            )}
+            <form className="chat-list-search-form">
+                {!isUserMenu &&(
+                    <button className="user-menu-btn" onClick={()=>setIsUserMenu(true)}>
+                        <img src={menuIcon} alt="menu icon image" width="20"/>
+                    </button>
+                )}
                 <input
+                    className="chat-list-search-input"
                     type="text"
                     name="searchText"
                     value={searchValue}
@@ -130,7 +149,7 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats}: Pro
                 <ul>
                     {chats.map((chat: any) => (
                         <li key={chat.id} onClick={(e) => handleClick(e, chat.id)}>
-                            {getChatName(chat, currentUser)}
+                           <ChatListItem chat={chat} currentUser={currentUser}/>
                         </li>
                     ))}
                 </ul>

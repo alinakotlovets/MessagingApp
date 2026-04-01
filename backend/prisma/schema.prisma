@@ -47,15 +47,16 @@ model Code {
 }
 
 model Chat {
-  id                   Int        @id @default(autoincrement())
+  id                   Int          @id @default(autoincrement())
   type                 Type
   name                 String?
   avatar               String?
-  createdAt            DateTime   @default(now())
+  createdAt            DateTime     @default(now())
   lastMessageId        Int?
   lastMessageText      String?
   lastMessageCreatedAt DateTime?
   lastMessageSenderId  Int?
+  lastMessageType      MessageType?
   chatUsers            ChatUser[]
   messages             Message[]
 }

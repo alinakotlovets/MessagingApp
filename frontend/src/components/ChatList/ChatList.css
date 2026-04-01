@@ -1,0 +1,26 @@
+.chat-list-box,
+.chat-window-box{
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.chat-list-box{
+    flex: 1;
+    overflow-y: auto;
+}
+
+
+.user-menu-btn{
+    background-color: transparent;
+    border: none;
+}
+
+.user-menu-btn img {
+    filter: invert(60%);
+}
+
+.chat-list-search-input{
+
+}

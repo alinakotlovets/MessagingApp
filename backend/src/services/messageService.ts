@@ -20,7 +20,8 @@ export const messageService = {
                 lastMessageId: message.id,
                 lastMessageCreatedAt: message.createdAt,
                 lastMessageText: message.text,
-                lastMessageSenderId: message.senderId
+                lastMessageSenderId: message.senderId,
+                lastMessageType: message.type
             }})
         return message
     })},
@@ -53,5 +54,13 @@ export const messageService = {
                     select:publicUserSelect}
             }
         }
-        )
+        ),
+    getPrevMessage: async(chatId: number, messageId:number): Promise<MessageWithUser | null>=>
+        prisma.message.findFirst({where:{
+            chatId: chatId,
+                id:{lt: messageId}
+        },
+            orderBy: { id: 'desc' },
+            include: { user: { select: publicUserSelect} }
+        })
 }

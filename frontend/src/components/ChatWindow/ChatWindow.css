@@ -1,0 +1,17 @@
+.chat-window-box{
+    background-color: #181818;
+}
+
+.chat-window-box{
+    flex: 2;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%
+}
+
+.chat-window-box{
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}

@@ -10,6 +10,7 @@ export type Chat = {
     lastMessageText: string | null;
     lastMessageCreatedAt: string | null;
     lastMessageSenderId: number | null;
+    lastMessageType: "MESSAGE"| "IMAGE";
 
     chatUsers: ChatUser[];
 }

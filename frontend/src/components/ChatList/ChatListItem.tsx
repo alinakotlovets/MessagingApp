@@ -1,6 +1,8 @@
 import type {Chat} from "../../types/Chat.ts";
 import type {User} from "../../types/User.ts";
 import defaultAvatar from "../../assets/defaultAvatar.png";
+import {formatDate} from "../../utils/formatDate.ts";
+import "./ChatListItem.css";
 
 type ChatListItemProps = {
     chat: Chat,
@@ -38,7 +40,7 @@ export function ChatListItem({ chat, currentUser }: ChatListItemProps) {
     }
 
     return (
-        <li className="chat-list-item">
+        <>
             <img
                 className="chat-avatar"
                 src={avatar}
@@ -50,19 +52,25 @@ export function ChatListItem({ chat, currentUser }: ChatListItemProps) {
                     <h3 className="chat-name">{name}</h3>
 
                     {chat.lastMessageCreatedAt && (
-                        <span className="chat-time">
-                            {chat.lastMessageCreatedAt}
-                        </span>
+                        <p className="chat-time">
+                            {formatDate(chat.lastMessageCreatedAt)}
+                        </p>
                     )}
                 </div>
 
                 {chat.lastMessageText && (
                     <div className="chat-last-message">
-                        {sender && <span className="chat-sender">{sender}: </span>}
-                        <span>{chat.lastMessageText}</span>
+                        {sender && <p className="chat-sender">{sender}: </p>}
+                        {chat.lastMessageType === "IMAGE"
+                            ? (<>
+                                <img className="chat-last-message-img" src={chat.lastMessageText} alt="last message image"/>
+                                <p>Photo</p>
+                            </>)
+                            :(<span className="last-message">{chat.lastMessageText}</span>)
+                        }
                     </div>
                 )}
             </div>
-        </li>
+        </>
     );
 }

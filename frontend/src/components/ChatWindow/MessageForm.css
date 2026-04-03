@@ -1,0 +1,71 @@
+.message-image-btn{
+    background-color: transparent;
+    border: none;
+}
+
+.message-image-btn img{
+    width: 20px;
+    height: 20px;
+    filter: invert(60%);
+}
+
+.message-form-box{
+    background-color: #212121FF;
+    padding: 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    width: 100%;
+}
+
+.message-form{
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.textarea-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    background-color: #212121;
+    padding: 0 5px;
+    border-radius: 4px;
+}
+
+.textarea-wrapper textarea {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: #FFFFFFFF;
+    resize: none;
+    line-height: 20px;
+    overflow-y: auto;
+    min-height: 30px;
+    padding-top: 17px;
+    max-height: 120px;
+}
+
+.message-form textarea:focus,
+.message-form textarea:hover{
+    outline: none;
+    border: none;
+}
+
+.message-form textarea:-webkit-autofill,
+.message-form textarea:-webkit-autofill:hover,
+.message-form textarea:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #212121 inset;
+    -webkit-text-fill-color: #fff;
+}
+
+.send-message-btn{
+    background-color: transparent;
+    border: none;
+}
+
+.send-message-btn img{
+    width: 25px;
+    height: 25px;
+    filter: invert(60%);
+}

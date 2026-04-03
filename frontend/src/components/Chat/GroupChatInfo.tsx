@@ -3,6 +3,7 @@ import {useState} from "react";
 import {UserSearch} from "../ChatList/UserSearch.tsx";
 import type {User} from "../../types/User.ts";
 import Client from "../../api/client.ts";
+import {Modal} from "../ui/Modal.tsx";
 
 type Props ={
     chat: Chat,
@@ -97,30 +98,29 @@ export function GroupChatInfo({
     }
 
     return(
-        <div className="modal-content">
+        <>
             {isAddUser &&(
-                <div className="modal-overlay">
-                <div className="modal-search">
-                    <button onClick={()=>setIsAddUser(false)}>close</button>
-                    {selectedUsers.length>0 &&(
-                        <>
-                            <h3>Selected users:</h3>
-                            <ul>
-                                {selectedUsers.map((user)=>(
-                                    <li key={user.id}>
-                                        <h3>{user.username}</h3>
-                                        <button onClick={()=>removeSelectedUser(user.id)}>X</button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </>
-                    )}
-                    <UserSearch onSelect={selectUser}/>
-                    <button onClick={addUsersToGroupChat}>Add Users</button>
-                </div>
-                </div>
+                <Modal onClose={()=>setIsAddUser(false)}>
+                    <div className="modal-search">
+                        {selectedUsers.length>0 &&(
+                            <>
+                                <h3>Selected users:</h3>
+                                <ul>
+                                    {selectedUsers.map((user)=>(
+                                        <li key={user.id}>
+                                            <h3>{user.username}</h3>
+                                            <button onClick={()=>removeSelectedUser(user.id)}>X</button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+                        <UserSearch onSelect={selectUser}/>
+                        <button onClick={addUsersToGroupChat}>Add Users</button>
+                    </div>
+                </Modal>
             )}
-            <button onClick={()=>setIsSettingsOpen(false)}>close</button>
+
             <h2>{chat.name}</h2>
             {admin && (currentUser?.id === admin.user.id) ? (
                 <div>
@@ -153,6 +153,6 @@ export function GroupChatInfo({
                     ))}
                 </ul>
             )}
-        </div>
+        </>
 )
 }

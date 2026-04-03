@@ -10,7 +10,9 @@ import {useChat} from "../../hooks/useChat.ts";
 import {ChatHeader} from "./ChatHeader.tsx";
 import {MessageForm} from "./MessageForm.tsx";
 import {Messages} from "./Messages.tsx";
+import {Modal} from "../ui/Modal.tsx";
 import type {UiStateChatWindow} from "../../types/UiStateChatWindow.ts";
+import "./ChatWindow.css";
 
 type Props = {
     selectedChatId: number | null;
@@ -188,39 +190,41 @@ export function ChatWindow({ selectedChatId,
             {uiState.isSettingsOpen && chat &&(
                 <div className="modal-overlay">
                     {chat.type === "GROUP" ? (
-                        <GroupChatInfo chat={chat}
-                                       setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
-                                       currentUser={currentUser}
-                                       setChat={setChat}
-                                       setSelectedChatId={setSelectedChatId}
-                                       chats={chats}
-                                       setChats={setChats}
-                                       setIsEdit={(value: boolean) => setUiState(prev => ({ ...prev, isEdit: value }))}
-                        />
+                        <Modal onClose={()=>setUiState(prev => ({ ...prev, isSettingsOpen: false }))}>
+                            <GroupChatInfo chat={chat}
+                                           setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
+                                           currentUser={currentUser}
+                                           setChat={setChat}
+                                           setSelectedChatId={setSelectedChatId}
+                                           chats={chats}
+                                           setChats={setChats}
+                                           setIsEdit={(value: boolean) => setUiState(prev => ({ ...prev, isEdit: value }))}
+                            />
+                        </Modal>
                     ):(
-                        <PrivateChatInfo chat={chat}
-                                         setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
-                                         setChat={setChat}
-                                         setSelectedChatId={setSelectedChatId}
-                                         chats={chats}
-                                         setChats={setChats}
-                        />
+                        <Modal onClose={()=> setUiState(prev => ({ ...prev, isSettingsOpen: false }))}>
+                            <PrivateChatInfo chat={chat}
+                                             currentUser={currentUser}
+                                             setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
+                                             setChat={setChat}
+                                             setSelectedChatId={setSelectedChatId}
+                                             chats={chats}
+                                             setChats={setChats}
+                            />
+                        </Modal>
                     )}
                 </div>
             )}
             {uiState.isEdit && chat &&(
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button onClick={()=>setUiState((prev)=>({...prev, isEdit:false}))}>X</button>
-                        <EditGroupChatForm chat={chat}
-                                           setSelectedChatId={setSelectedChatId}
-                                           setIsEdit={(value: boolean) => setUiState(prev => ({ ...prev, isEdit: value }))}
-                                           setChats={setChats}
-                                           chats={chats}
-                                           setChat={setChat}
-                        />
-                    </div>
-                </div>
+                <Modal onClose={()=>setUiState((prev)=>({...prev, isEdit:false}))}>
+                <EditGroupChatForm chat={chat}
+                    setSelectedChatId={setSelectedChatId}
+                    setIsEdit={(value: boolean) => setUiState(prev => ({ ...prev, isEdit: value }))}
+                    setChats={setChats}
+                    chats={chats}
+                    setChat={setChat}
+                    />
+                </Modal>
             )}
             <ChatHeader isLoading={isLoading}
                         errors={errors}

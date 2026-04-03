@@ -1,14 +1,31 @@
-export function getChatInfo(chat:any, currentUser:any){
-    if(chat.name) return chat.name;
-    if (!currentUser) return "Unknown";
+import defaultAvatar from "../../assets/defaultAvatar.png";
+export function getChatInfo(chat: any, currentUser: any) {
+        if (!chat || !currentUser) return null;
 
-    const otherUser = chat.chatUsers.filter((user:any)=>user.userId !== currentUser.id);
-    if (otherUser.length === 0) return "No Name";
+        if (chat.type === "GROUP") {
+            return {
+                name: chat.name || "No Name",
+                username: "",
+                avatar: chat.avatar || defaultAvatar
+            };
+        }
 
-    return otherUser[0].user.displayName
-    //     {
-    //     name: otherUser[0].user.displayName,
-    //     lastMessageText: chat.lastMessageText,
-    //     lastMessageCreatedAt: chat. lastMessageCreatedAt,
-    // }
+        const otherUser = chat.chatUsers.find(
+            (u: any) => u.userId !== currentUser.id
+        );
+
+        if (!otherUser) {
+            return {
+                name: "No Name",
+                username: "",
+                avatar: defaultAvatar
+            };
+        }
+
+
+        return {
+            name: otherUser.user.displayName,
+            username: otherUser.user.username,
+            avatar: otherUser.user.avatar || defaultAvatar
+        };
 }

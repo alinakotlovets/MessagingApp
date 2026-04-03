@@ -1,5 +1,10 @@
 import {ContextMenu} from "./ContextMenu.tsx";
 import * as React from "react";
+import {getMessageClass} from "../../utils/getMessageClass.ts";
+import {formatDate} from "../../utils/formatDate.ts";
+import "./Messages.css";
+import "../ui/CustomScroll.css"
+import defaultAvatar from "../../assets/defaultAvatar.png"
 
 
 type MessagesProps = {
@@ -31,8 +36,10 @@ export function Messages({messages,
                              setMessages,
                              setInputValue,
                              setEditingMessageId}:MessagesProps){
+
+    if(!currentUser) return null;
     return(
-        <div className="messages">
+        <div className="messages custom-scroll">
             {isLoading.messages &&(<h2>Loading...</h2>)}
 
             {errors.messages.length>0 &&(
@@ -65,11 +72,23 @@ export function Messages({messages,
                                     />
                                 </div>
                             )}
-                            <li key={message.id} onContextMenu={(e)=>
+                            <li  className="message-item" key={message.id} onContextMenu={(e)=>
                                 handleOnContext(e, message.id)}>
+                                {chat?.type === "GROUP" && message.senderId !== currentUser.id && (
+                                    <div className="message-header">
+                                        <img src={message.user.avatar || defaultAvatar} alt="avatar" className="avatar" />
+                                        <span className="display-name">{message.user.displayName}</span>
+                                    </div>
+                                )}
                                 {message.type === "MESSAGE" ?
-                                    (<h3>{message.text}</h3>) :
-                                    (<img src={message.text}/>)}
+                                    (<div className={getMessageClass(message, currentUser)}>
+                                        <h3>{message.text}</h3>
+                                        <p className="message-time">{formatDate(message.createdAt)}</p>
+                                    </div>) :
+                                    (<div className={getMessageClass(message, currentUser)}>
+                                        <img src={message.text}/>
+                                        <p className="message-time">{formatDate(message.createdAt)}</p>
+                                    </div>)}
                             </li>
                         </>
                     ))}

@@ -28,8 +28,9 @@
 }
 
 .modal-content {
+    position: relative;
     background-color: rgb(33, 33, 33, 1);
-    padding: 20px;
+    padding: 30px 20px 20px 20px;
     border-radius: 8px;
     max-width: 500px;
     width: 90%;
@@ -41,4 +42,14 @@
     display: flex;
     flex-direction:column;
     gap: 5px;
+}
+
+.close-btn{
+    position: absolute;
+    top: 10px;
+    right: 7px;
+    color: rgba(255, 255, 255, 1);
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
 }

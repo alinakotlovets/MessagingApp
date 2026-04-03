@@ -1,7 +1,8 @@
 import { prisma } from "../../lib/prisma.js";
-import { Role, Type } from "../../generated/prisma/client.js";
+import {type MessageType, Role, Type} from "../../generated/prisma/client.js";
 import type { Chat, ChatUser, User } from "../../generated/prisma/client.js";
 import {chatWithUsersInclude} from "../utils/chatWithUsersInclude.js";
+import {fdatasync} from "node:fs";
 type ChatWithUsers = Chat & {
     chatUsers: (ChatUser & { user: Pick<User, 'id' | 'displayName' | 'username' | 'avatar'> })[]
 };
@@ -101,5 +102,17 @@ export const chatService = {
                 avatar
             },
             include: chatWithUsersInclude
+        }),
+    updateLastMessage: async(chatId: number,
+                             lastMessageId: number | null,
+                             lastMessageCreatedAt: Date | null,
+                             lastMessageText: string | null,
+                             lastMessageSenderId: number | null,
+                             lastMessageType: MessageType | null): Promise<ChatWithUsers> =>
+        prisma.chat.update({where:{
+            id: chatId
+            },
+            data:{lastMessageId, lastMessageCreatedAt, lastMessageText, lastMessageSenderId, lastMessageType
+        }, include: chatWithUsersInclude
         })
 };

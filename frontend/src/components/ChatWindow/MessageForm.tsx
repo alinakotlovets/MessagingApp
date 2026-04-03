@@ -2,7 +2,13 @@ import {AddPhotoForm} from "./AddPhotoForm.tsx";
 import type {Chat} from "../../types/Chat.ts";
 import type {Message} from "../../types/Message.ts";
 import * as React from "react";
+import {useRef, useEffect} from "react";
 import "../ui/Modal.css"
+import Image from "../../assets/image.png"
+import './MessageForm.css';
+import "../ui/CustomScroll.css"
+import Send from "../../assets/send.png";
+import {Modal} from "../ui/Modal.tsx";
 
 type MessageFormProps = {
     chat: Chat | null;
@@ -30,29 +36,53 @@ export function MessageForm({ chat,
                                 errors,
                                 messageState,
                                 handlers}:MessageFormProps){
+
+    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+    useEffect(() => {
+        const textarea = textareaRef.current;
+        if (!textarea) return;
+
+        textarea.style.height = "auto";
+
+        const maxHeight = 120;
+        const scrollHeight = textarea.scrollHeight;
+
+        if (scrollHeight <= maxHeight) {
+            textarea.style.height = scrollHeight + "px";
+            textarea.style.overflowY = "hidden";
+        } else {
+            textarea.style.height = maxHeight + "px";
+            textarea.style.overflowY = "auto";
+        }
+    }, [inputValue]);
+
     return(
-        <div>
+        <>
             {isAddImage && (
-                <div className="modal-overlay">
-                    <div className="modal-content">
-                        <button onClick={() => setIsAddImage(false)}>Close</button>
-                        <AddPhotoForm chat={chat} messages={messageState.messages} setMessages={messageState.setMessages} setIsAddImage={setIsAddImage}/>
-                    </div>
-                </div>
+                <Modal onClose={() => setIsAddImage(false)}>
+                    <AddPhotoForm chat={chat} messages={messageState.messages} setMessages={messageState.setMessages} setIsAddImage={setIsAddImage}/>
+                </Modal>
             )}
 
             {!isLoading.messages && selectedChatId !== null && (
-                <>
+                <div className="message-form-box">
                     {messageState.editingMessageId &&(
                         <button onClick={handlers.handleCloseEditMessage}>X</button>
                     )}
-                    <form onClick={(e)=>e.stopPropagation()} onSubmit={handlers.handleSubmit}>
-                        <button type="button" onClick={(e)=>handlers.handleAddImage(e)}>Add image</button>
-                        <input type="text"
-                               name="text"
-                               value={inputValue}
-                               onChange={(e)=>{setInputValue(e.target.value)}}/>
-                        <button type="submit">Send</button>
+                    <form className="message-form" onClick={(e)=>e.stopPropagation()} onSubmit={handlers.handleSubmit}>
+                        <button className="message-image-btn" type="button" onClick={(e)=>handlers.handleAddImage(e)}>
+                            <img src={Image} alt="Add imagge button icon"/>
+                        </button>
+                        <div className="textarea-wrapper">
+                        <textarea ref={textareaRef}
+                                  className="custom-scroll"
+                                  name="text"
+                                  placeholder="Message"
+                                  value={inputValue}
+                                  onChange={(e)=>{setInputValue(e.target.value)}}/>
+                        </div>
+                        <button className="send-message-btn" type="submit"><img src={Send} alt="Send message button icon"/></button>
                         {errors.sendMessage.length >0 &&(
                             <ul>
                                 {errors.sendMessage.map((e,index)=>(
@@ -61,8 +91,8 @@ export function MessageForm({ chat,
                             </ul>
                         )}
                     </form>
-                </>
+                </div>
             )}
-        </div>
+        </>
     )
 }

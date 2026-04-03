@@ -4,9 +4,15 @@ import * as React from "react";
 import type {User} from "../../types/User.ts";
 import type {Chat} from "../../types/Chat.ts";
 import {UserMenu} from "../User/UserMenu.tsx";
-import menuIcon from "../../assets/menu-icon.png";
 import {ChatListItem} from "./ChatListItem.tsx";
+import {SearchBox} from "./SearchBox.tsx";
 import "./ChatList.css"
+import "../ui/CustomScroll.css"
+
+type Errors = {
+    chatErrors: string[];
+    searchErrors: string[];
+};
 
 type Props = {
     setSelectedChatId: (id: number) => void;
@@ -19,7 +25,7 @@ type Props = {
 
 export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setIsEditUser, setIsGroupModalOpen}: Props) {
 
-    const [errors, setErrors] = useState({ chatErrors: [], searchErrors: [] });
+    const [errors, setErrors] = useState<Errors>({ chatErrors: [], searchErrors: [] });
     const [isLoading, setIsLoading] = useState({ chatLoading: false, searchLoading: false });
     const [searchValue, setSearchValue] = useState("");
     const [users, setUsers] = useState<User[] | null>(null);
@@ -49,11 +55,6 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
     function handleClick(e: React.MouseEvent<HTMLLIElement>, chatId: number) {
         e.preventDefault();
         setSelectedChatId(chatId);
-    }
-
-    function handleSearch(e: React.ChangeEvent<HTMLInputElement, HTMLInputElement>) {
-        e.preventDefault();
-        setSearchValue(e.target.value);
     }
 
     useEffect(() => {
@@ -107,32 +108,13 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
                           currentUser={currentUser}
                 />
             )}
-            <form className="chat-list-search-form">
-                {!isUserMenu &&(
-                    <button className="user-menu-btn" onClick={()=>setIsUserMenu(true)}>
-                        <img src={menuIcon} alt="menu icon image" width="20"/>
-                    </button>
-                )}
-                <input
-                    className="chat-list-search-input"
-                    type="text"
-                    name="searchText"
-                    value={searchValue}
-                    onChange={handleSearch}
-                />
-                {searchValue !== "" && (
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setSearchValue("");
-                            setUsers(null);
-                            setErrors(prev => ({ ...prev, searchErrors: [] }));
-                        }}
-                    >
-                        X
-                    </button>
-                )}
-            </form>
+
+            <SearchBox setIsUserMenu={setIsUserMenu}
+                       searchValue={searchValue}
+                       setSearchValue={setSearchValue}
+                       setUsers={setUsers}
+                       setErrors={setErrors}/>
+            <div className="chat-list-items custom-scroll">
 
             {isLoading.chatLoading && <h3>Loading...</h3>}
             {isLoading.searchLoading && searchValue !== "" && <h3>Loading...</h3>}
@@ -146,9 +128,9 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
             )}
 
             {chats.length > 0 && searchValue === "" && (
-                <ul>
+                <ul className="chat-list-items-box">
                     {chats.map((chat: any) => (
-                        <li key={chat.id} onClick={(e) => handleClick(e, chat.id)}>
+                        <li className="chat-list-item" key={chat.id} onClick={(e) => handleClick(e, chat.id)}>
                            <ChatListItem chat={chat} currentUser={currentUser}/>
                         </li>
                     ))}
@@ -179,6 +161,7 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
                     ))}
                 </ul>
             )}
+            </div>
         </div>
     );
 }

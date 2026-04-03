@@ -3,6 +3,7 @@ import type {Chat} from "../../types/Chat.ts";
 import {useState} from "react";
 import * as React from "react";
 import type {Message} from "../../types/Message.ts";
+import "./AddPhotoForm.css";
 
 type Props={
     chat: Chat | null,
@@ -29,16 +30,32 @@ export function AddPhotoForm({chat, messages, setMessages, setIsAddImage}:Props)
     }
 
     return(
-        <form  onSubmit={(e)=>handleSubmit(e)}  encType="multipart/form-data">
-            <input name="image"
-                   type="file"
-                   onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
-                    if(e.target.files && e.target.files[0]){
-                    setImage(e.target.files[0]);}}}/>
-            <button>Send</button>
-            {errors.length>0 &&(
+        <form className="add-photo-form" onSubmit={handleSubmit} encType="multipart/form-data">
+            <label className="file-label" htmlFor="fileInput">
+                {image ? image.name : "Choose image"}
+            </label>
+            {image && (
+                <div className="image-preview">
+                    <p>Preview image:</p>
+                    <img src={URL.createObjectURL(image)} alt="preview" />
+                </div>
+            )}
+            <input
+                id="fileInput"
+                className="file-input-hidden"
+                name="image"
+                type="file"
+                onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        setImage(e.target.files[0]);
+                    }
+                }}
+            />
+
+            <button className="submit-btn">Send</button>
+            {errors.length > 0 && (
                 <ul>
-                    {errors.map((e, i)=>(
+                    {errors.map((e, i) => (
                         <li key={i}>{e}</li>
                     ))}
                 </ul>

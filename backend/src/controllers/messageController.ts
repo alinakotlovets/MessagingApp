@@ -59,6 +59,15 @@ export async function deleteMessage(req:Request, res:Response){
 
     if(!isUserMessageSender && !isAdmin) throw new AppError(403, "You dont have permission to delete this message");
 
+    if(chat.lastMessageId === messageId) {
+        const prevMessage = await messageService.getPrevMessage(chatId, messageId);
+        if(!prevMessage){
+            await chatService.updateLastMessage(chatId, null, null, null, null, null);
+        } else {
+            await chatService.updateLastMessage(chatId, prevMessage.id, prevMessage.createdAt, prevMessage.text, prevMessage.senderId, prevMessage.type);
+        }
+    }
+
     await messageService.deleteMessage(messageId);
     res.status(200).json({message: "Message deleted successfully"});
 }

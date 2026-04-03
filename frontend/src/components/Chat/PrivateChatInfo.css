@@ -1,0 +1,31 @@
+.user-avatar{
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 100px;
+}
+
+.user-text-box{
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.user-info-box{
+    display: flex;
+    align-items: start;
+    justify-content: start;
+    gap: 10px;
+    padding: 10px;
+    transition: background-color 300ms ease-in-out;
+    border-radius: 20px;
+}
+
+.user-info-box:focus,
+.user-info-box:hover{
+    background-color: #292929FF;
+}
+
+.font-16px{
+    font-size: 16px;
+}

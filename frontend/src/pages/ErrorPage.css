@@ -1,0 +1,43 @@
+.error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #181818;
+    color: white;
+    text-align: center;
+    gap: 12px;
+}
+
+.error-page .error-code {
+    font-size: 96px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.error-page .error-title {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.error-page .error-message {
+    font-size: 14px;
+    color: #aaa;
+}
+
+.error-page .error-btn {
+    margin-top: 8px;
+    padding: 10px 24px;
+    background-color: #303030;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.error-page .error-btn:hover {
+    opacity: 0.85;
+}

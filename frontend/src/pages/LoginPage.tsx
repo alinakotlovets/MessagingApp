@@ -1,7 +1,8 @@
 import {useState} from "react";
 import * as React from "react";
 import Client from "../api/client.ts";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import "./registration.css"
 
 function LoginPage(){
 
@@ -36,9 +37,10 @@ function LoginPage(){
     }
 
     return(
-        <>
-        <form onSubmit={handleSubmit}>
-            <label htmlFor="login">Login</label>
+        <div className="register-form-box">
+            <h2>Login</h2>
+        <form className="register-form" onSubmit={handleSubmit}>
+            <label htmlFor="login">Login:</label>
             <input id="login"
                    name="login"
                    value={inputValue.login}
@@ -49,8 +51,11 @@ function LoginPage(){
             <input id="password"
                    value={inputValue.password}
                    name="password"
+                   type="password"
                    onChange={handleChange}/>
-            <button type="submit">Submit</button>
+            <div className="submit-btn-box">
+                <button className="submit-btn" type="submit">Submit</button>
+            </div>
             {errors.length>0 && (
                 <ul>
                     {errors.map((error, index)=>(
@@ -59,7 +64,8 @@ function LoginPage(){
                 </ul>
             )}
         </form>
-        </>
+            <h4>Dont have account yet, <Link className="register-link" to="/register">Register</Link></h4>
+        </div>
     )
 }
 

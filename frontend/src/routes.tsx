@@ -3,6 +3,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import RegisterPage from "./pages/RegisterPage.tsx";
 import VerifyEmail from "./pages/VerifyEmail.tsx";
 import VerifiedRoute from "./components/VerifiedRoute.tsx";
+import {ErrorPage} from "./pages/ErrorPage.tsx";
 
 const routes = [
     {
@@ -24,6 +25,10 @@ const routes = [
     {
         path: "/verify-email",
         element: <VerifyEmail/>
+    },
+    {
+        path: "*",
+        element: <ErrorPage code={404} message="Сторінку не знайдено" />
     }
 ]
 

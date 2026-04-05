@@ -38,16 +38,28 @@ export function EditUserModal({currentUser, setCurrentUser, setIsEditUser}:Props
                    id="displayName"
                    name="displayName"
                    onChange={(e)=>setInputValue(e.target.value)}/>
-            <label htmlFor="avatar">Avatar:</label>
+            {avatar && (
+                <div className="image-preview">
+                    <p>Preview image:</p>
+                    <img src={URL.createObjectURL(avatar)} alt="preview" />
+                </div>
+            )}
+            <label>Avatar:</label>
+            <label className="file-label" htmlFor="avatar">
+                {avatar ? avatar.name : "Choose image"}
+            </label>
             <input name="avatar"
                    id="avatar"
+                   className="file-input-hidden"
                    type="file"
                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
                        if(e.target.files && e.target.files[0]){
                            setAvatar(e.target.files[0]);
                        }
                    }}/>
-            <button type="submit">Submit</button>
+            <div className="submit-btn-box">
+                <button className="submit-btn" type="submit">Submit</button>
+            </div>
             {errors.length>0 &&(
                 <ul>
                     {errors.map((e,index)=>(<li key={index}>{e}</li>))}

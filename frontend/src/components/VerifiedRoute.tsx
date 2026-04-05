@@ -28,6 +28,12 @@ export default function VerifiedRoute({ children }: { children: JSX.Element }){
         checkStatus();
     }, [navigate]);
 
-    if(loading) return <div>Loading...</div>
+    if(loading) {
+        return  (
+            <div className="flex-center">
+                <h3>Loading...</h3>
+            </div>
+        )
+    }
     return children;
 }

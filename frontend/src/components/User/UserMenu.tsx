@@ -20,11 +20,13 @@ export function UserMenu({setIsEditUser, setIsGroupModalOpen, setIsUserMenu, cur
 
     function handleEdit() {
         setIsEditUser(true);
+        setIsUserMenu(false);
     }
 
     function handleCreateGroupChat(){
         setIsGroupModalOpen(true);
         setIsEditUser(false);
+        setIsUserMenu(false);
     }
 
     if(!currentUser) return null;

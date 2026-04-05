@@ -3,7 +3,7 @@ import {useState} from "react";
 import Client from "../../api/client.ts";
 import "../ui/Modal.css"
 import defaultAvatar from "../../assets/defaultAvatar.png";
-import "./PrivateChatInfo.css";
+import "./ChatInfo.css";
 import type {User} from "../../types/User.ts";
 import {getChatInfo} from "../../utils/getChatInfo.ts";
 
@@ -41,12 +41,12 @@ export function PrivateChatInfo({chat,
 
     return(
         <div className="chat-info-box">
-            <div>
-                <img src={info?.avatar} alt="chat avatar"/>
+            <div className="chat-info-top-box">
+                <img className="chat-info-top-box-avatar" src={info?.avatar} alt="chat avatar"/>
                 <h2>{info?.name}</h2>
-            </div>
-            <div>
-                <button onClick={()=>deleteChat(chat.id)}>Delete Chat</button>
+                <div>
+                    <button className="primary-btn" onClick={()=>deleteChat(chat.id)}>Delete Chat</button>
+                </div>
             </div>
             {errors.length>0 &&(
                 <ul>
@@ -58,7 +58,7 @@ export function PrivateChatInfo({chat,
             <h3>Users:</h3>
             <ul>
                 {chat.chatUsers.map((cu)=>(
-                    <li className="user-info-box" key={cu.id}>
+                    <li className="private-user-info-box" key={cu.id}>
                         <img className="user-avatar" src={cu.user.avatar || defaultAvatar} alt={cu.user.username + " avatar"}/>
                         <div className="user-text-box">
                             <h3 className="font-18px">{cu.user.displayName}</h3>

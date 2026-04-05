@@ -4,6 +4,7 @@ type UserSearchProps = {
     onSelect: (user: any) => void;
 };
 import type {User} from "../../types/User.ts";
+import defaultAvatar from "../../assets/defaultAvatar.png";
 
 export function UserSearch({onSelect}:UserSearchProps) {
     const [searchValue, setSearchValue] = useState("");
@@ -31,16 +32,17 @@ export function UserSearch({onSelect}:UserSearchProps) {
     }, [searchValue]);
 
     return (
-        <div>
-            <form>
+        <div className="search-box">
+            <form className="search-form">
                 <input
                     type="text"
+                    className="chat-list-search-input"
+                    placeholder="Search"
                     value={searchValue}
                     onChange={(e) => setSearchValue(e.target.value)}
                 />
-                {searchValue && <button type="button" onClick={() => {
+                {searchValue && <button className="close-search-btn" type="button" onClick={() => {
                     setSearchValue("");
-                    setUsers([]);
                     setErrors([]);
                 }}>X</button>}
             </form>
@@ -52,18 +54,22 @@ export function UserSearch({onSelect}:UserSearchProps) {
             {!isLoading && users.length > 0 && (
                 <ul>
                     {users.map(u => (
-                        <li key={u.id} onClick={() => onSelect(u)}>
-                            {u.username}
+                        <li className="private-user-info-box" key={u.id} onClick={() => onSelect(u)}>
+                            <img className="user-avatar" src={u.avatar || defaultAvatar} alt={u.username + " avatar"}/>
+                            <div className="user-text-box">
+                                <h3 className="font-18px">{u.displayName}</h3>
+                                <h4 className="text-grey font-16px">@{u.username}</h4>
+                            </div>
                         </li>
                     ))}
                 </ul>
             )}
 
             {!isLoading && searchValue && users.length === 0 && (
-                <p>User not found</p>
+                <div className="flex-center"><p>User not found</p></div>
             )}
 
-            {isLoading && <p>Loading...</p>}
+            {isLoading && (<div className="flex-center"><p>Loading...</p></div>)}
         </div>
     );
 }

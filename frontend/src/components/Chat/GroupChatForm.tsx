@@ -3,6 +3,7 @@ import {UserSearch} from "../ChatList/UserSearch.tsx";
 import type {User} from "../../types/User.ts";
 import * as React from "react";
 import Client from "../../api/client.ts";
+import defaultAvatar from "../../assets/defaultAvatar.png";
 
 
 type Props = {
@@ -62,9 +63,19 @@ export function GroupChatForm({currentUser, setSelectedChatId, setIsGroupModalOp
                    id="groupName"
                    name="groupName"
                    onChange={(e)=>setInputValue(e.target.value)}/>
-            <label htmlFor="avatar">Group avatar:</label>
+            {avatar && (
+                <div className="image-preview">
+                    <p>Preview image:</p>
+                    <img src={URL.createObjectURL(avatar)} alt="preview" />
+                </div>
+            )}
+            <label>Group avatar:</label>
+            <label className="file-label" htmlFor="avatar">
+                {avatar ? avatar.name : "Choose image"}
+            </label>
             <input name="avatar"
                    id="avatar"
+                   className="file-input-hidden"
                    type="file"
                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
                        if(e.target.files && e.target.files[0]){
@@ -72,22 +83,35 @@ export function GroupChatForm({currentUser, setSelectedChatId, setIsGroupModalOp
                        }
                    }}/>
             {selectedUsers.length > 0 &&(
-                <ul>
+                <>
+                    <label>Selected users:</label>
+                <ul className="search-selected-users">
                     {selectedUsers.map((user)=>(
-                        <li key={user.id}>
-                            <h3>{user.username}</h3>
-                            <button onClick={()=>removeSelectedUser(user.id)}>X</button>
+                        <li className="user-info-box" key={user.id}>
+                            <div className="user-info-box-left">
+                            <img className="user-avatar" src={user.avatar || defaultAvatar} alt={user.username + " avatar"}/>
+                            <div className="user-text-box">
+                                <h3 className="font-18px">{user.displayName}</h3>
+                                <h4 className="text-grey font-16px">@{user.username}</h4>
+                            </div>
+                            </div>
+                            <button className="close-search-btn" onClick={()=>removeSelectedUser(user.id)}>X</button>
                         </li>
                     ))}
                 </ul>
+                </>
             )}
-            <label>Selected users:</label>
+            <label>Search users:</label>
             <UserSearch onSelect={selectUser}/>
-            <button type="submit">Submit</button>
+            <div className="submit-btn-box">
+                <button className="submit-btn" type="submit">Submit</button>
+            </div>
             {errors.length>0 &&(
-                <ul>
-                    {errors.map((e,index)=>(<li key={index}>{e}</li>))}
-                </ul>
+                <div className="flex-center">
+                    <ul>
+                        {errors.map((e,index)=>(<li key={index}>{e}</li>))}
+                    </ul>
+                </div>
             )}
         </form>
     )

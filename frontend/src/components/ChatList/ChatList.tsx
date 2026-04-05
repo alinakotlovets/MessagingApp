@@ -6,6 +6,7 @@ import type {Chat} from "../../types/Chat.ts";
 import {UserMenu} from "../User/UserMenu.tsx";
 import {ChatListItem} from "./ChatListItem.tsx";
 import {SearchBox} from "./SearchBox.tsx";
+import defaultAvatar from "../../assets/defaultAvatar.png";
 import "./ChatList.css"
 import "../ui/CustomScroll.css"
 
@@ -116,8 +117,15 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
                        setErrors={setErrors}/>
             <div className="chat-list-items custom-scroll">
 
-            {isLoading.chatLoading && <h3>Loading...</h3>}
-            {isLoading.searchLoading && searchValue !== "" && <h3>Loading...</h3>}
+            {isLoading.chatLoading &&
+                (<div className="flex-center">
+                    <h3>Loading...</h3>
+                </div>)
+            }
+            {isLoading.searchLoading && searchValue !== "" &&
+                (<div className="flex-center">
+                <h3>Loading...</h3>
+                </div>)}
 
             {errors.chatErrors.length > 0 && (
                 <ul>
@@ -138,7 +146,7 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
             )}
 
             {!isLoading.chatLoading && chats.length === 0 && searchValue === "" && (
-                <div>
+                <div className="flex-center">
                     <h2>There are no chats create them</h2>
                 </div>
             )}
@@ -151,12 +159,23 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
                 </ul>
             )}
 
-            {!isLoading.searchLoading && searchValue !== "" && (
+                {users && users.length === 0 &&
+                        <div className="flex-center">
+                            User with this username not found
+                        </div>
+                }
+
+            {!isLoading.searchLoading && searchValue !== "" && users && users.length>0 && (
                 <ul>
-                    {users && users.length === 0 && <li>User with this username not found</li>}
                     {users && users.map((user: any) => (
-                        <li key={user.id} onClick={(e) => handleCreateChat(e, user.id)}>
-                            {user.username}
+                        <li key={user.id}
+                            className="private-user-info-box"
+                            onClick={(e) => handleCreateChat(e, user.id)}>
+                                <img className="user-avatar" src={user.avatar || defaultAvatar} alt={user.username + " avatar"}/>
+                                <div className="user-text-box">
+                                    <h3 className="font-18px">{user.displayName}</h3>
+                                    <h4 className="text-grey font-16px">@{user.username}</h4>
+                                </div>
                         </li>
                     ))}
                 </ul>

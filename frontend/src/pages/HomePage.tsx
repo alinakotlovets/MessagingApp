@@ -43,7 +43,7 @@ function HomePage() {
                 </Modal>
             )}
             {isEditUser && (
-                <Modal onClose={() => setIsEditUser(false)} closeOnOverlayClick={false}>
+                <Modal onClose={() => setIsEditUser(false)} closeOnOverlayClick={true}>
                 <EditUserModal currentUser={currentUser}
                     setCurrentUser={setCurrentUser}
                     setIsEditUser={setIsEditUser}/>

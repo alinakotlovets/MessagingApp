@@ -26,6 +26,11 @@ export async function createPrivateChat(req:Request, res: Response){
 export async function getUserChats(req: Request, res:Response){
     const currentUserId = getUserIdOrError(req);
     const chats = await chatService.getUserChats(currentUserId);
+    chats.sort((a, b) => {
+        const dateA = a.lastMessageCreatedAt ?? a.createdAt;
+        const dateB = b.lastMessageCreatedAt ?? b.createdAt;
+        return dateB.getTime() - dateA.getTime();
+    });
     res.status(200).json({chats})
 }
 

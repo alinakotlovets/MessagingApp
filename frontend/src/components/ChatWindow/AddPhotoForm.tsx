@@ -51,8 +51,9 @@ export function AddPhotoForm({chat, messages, setMessages, setIsAddImage}:Props)
                     }
                 }}
             />
-
-            <button className="submit-btn">Send</button>
+            <div className="submit-btn-box">
+                <button className="submit-btn">Send</button>
+            </div>
             {errors.length > 0 && (
                 <ul>
                     {errors.map((e, i) => (

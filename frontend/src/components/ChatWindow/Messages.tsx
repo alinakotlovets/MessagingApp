@@ -21,6 +21,8 @@ type MessagesProps = {
     setMessages: (messages: any[]) => void;
     setInputValue: (value: string) => void;
     setEditingMessageId: (id: number | null) => void;
+    messagesEndRef: any,
+    position: string
 };
 
 export function Messages({messages,
@@ -35,12 +37,18 @@ export function Messages({messages,
                              chat,
                              setMessages,
                              setInputValue,
-                             setEditingMessageId}:MessagesProps){
+                             setEditingMessageId,
+                             messagesEndRef,
+                             position}:MessagesProps){
 
     if(!currentUser) return null;
     return(
         <div className="messages custom-scroll">
-            {isLoading.messages &&(<h2>Loading...</h2>)}
+            {isLoading.messages &&(
+                <div className="flex-center">
+                    <h2>Loading...</h2>
+                </div>
+            )}
 
             {errors.messages.length>0 &&(
                 <ul>
@@ -51,29 +59,30 @@ export function Messages({messages,
             )}
 
             {!isLoading.messages && selectedChatId !== null && messages.length === 0 &&(
+                <div className="flex-center">
                 <h2>There a no messages send one</h2>
+                </div>
             )}
 
             {!isLoading.messages && selectedChatId !== null && messages &&(
+                <>
                 <ul>
                     {messages.map((message: any)=>(
-                        <>
-                            {contextMenuMessageId && message.id === contextMenuMessageId &&(
-                                <div onClick={(e)=>e.stopPropagation()}>
-                                    <ContextMenu isAdmin={isAdmin}
-                                                 currentUser={currentUser}
-                                                 message={message}
-                                                 chat={chat}
-                                                 setContextMenuMessageId={setContextMenuMessageId}
-                                                 setMessages={setMessages}
-                                                 messages={messages}
-                                                 setInputValue={setInputValue}
-                                                 setEditingMessageId={setEditingMessageId}
-                                    />
-                                </div>
-                            )}
                             <li  className="message-item" key={message.id} onContextMenu={(e)=>
                                 handleOnContext(e, message.id)}>
+                                {contextMenuMessageId && message.id === contextMenuMessageId &&(
+                                        <ContextMenu isAdmin={isAdmin}
+                                                     currentUser={currentUser}
+                                                     message={message}
+                                                     chat={chat}
+                                                     setContextMenuMessageId={setContextMenuMessageId}
+                                                     setMessages={setMessages}
+                                                     messages={messages}
+                                                     setInputValue={setInputValue}
+                                                     setEditingMessageId={setEditingMessageId}
+                                                     position={position}
+                                        />
+                                )}
                                 {chat?.type === "GROUP" && message.senderId !== currentUser.id && (
                                     <div className="message-header">
                                         <img src={message.user.avatar || defaultAvatar} alt="avatar" className="avatar" />
@@ -82,17 +91,18 @@ export function Messages({messages,
                                 )}
                                 {message.type === "MESSAGE" ?
                                     (<div className={getMessageClass(message, currentUser)}>
-                                        <h3>{message.text}</h3>
+                                        <h3 className="message-text">{message.text}</h3>
                                         <p className="message-time">{formatDate(message.createdAt)}</p>
                                     </div>) :
                                     (<div className={getMessageClass(message, currentUser)}>
-                                        <img src={message.text}/>
+                                        <img className={getMessageClass(message, currentUser)} src={message.text}/>
                                         <p className="message-time">{formatDate(message.createdAt)}</p>
                                     </div>)}
                             </li>
-                        </>
                     ))}
                 </ul>
+                <div ref={messagesEndRef} />
+                </>
             )}
         </div>
     )

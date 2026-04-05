@@ -3,6 +3,7 @@ import type {Message} from "../../types/Message.ts";
 import Client from "../../api/client.ts";
 import {useState} from "react";
 import * as React from "react";
+import "./ContextMenu.css";
 
 type Props ={
     isAdmin: boolean | null,
@@ -13,7 +14,8 @@ type Props ={
     setMessages: any,
     messages: Message[],
     setInputValue: (value:string)=>void,
-    setEditingMessageId: (value: number|null)=>void
+    setEditingMessageId: (value: number|null)=>void,
+    position: string
 }
 export function ContextMenu({
                                 isAdmin,
@@ -24,7 +26,8 @@ export function ContextMenu({
                                 setMessages,
                                 messages,
                                 setInputValue,
-                                setEditingMessageId}:Props){
+                                setEditingMessageId,
+                                position}:Props){
     if(!currentUser) return null;
 
     const [errors, setErrors]= useState<string[]>([]);
@@ -54,7 +57,8 @@ export function ContextMenu({
     const canDelete = isSender || (isAdmin=== true && !isSender);
 
     return (
-            <div>
+            <div className={`context-menu-box ${isSender ? "right" : "left"} ${position}`}
+            >
                 {canEdit && <button onClick={editUser}>Edit message</button>}
                 {canDelete && <button onClick={deleteUser}>Delete message</button>}
                 {errors.length > 0 && (

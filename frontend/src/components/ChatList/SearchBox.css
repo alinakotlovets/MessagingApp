@@ -24,3 +24,40 @@
     filter: invert(60%);
 }
 
+
+.search-form{
+    display: flex;
+    width: 100%;
+    justify-content: start;
+    padding: 5px 0 !important;
+    align-items: center !important;
+    gap:10px;
+    flex-direction: row !important;
+}
+
+.search-box{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    gap:5px;
+}
+
+.search-form input{
+    width: 100%;
+}
+
+.search-box ul,
+.search-box li{
+    width: 100%;
+}
+
+.user-info-box{
+    width: 100%;
+}
+
+.search-selected-users{
+    width: 100%;
+    margin: 10px 0;
+}

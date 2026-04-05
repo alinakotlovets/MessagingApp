@@ -18,7 +18,11 @@ export function ChatHeader({isLoading, errors, selectedChatId, chat, currentUser
 
     return(
         <>
-            {isLoading.chat &&(<h2>Loading...</h2>)}
+            {isLoading.chat && (
+                <div className="flex-center">
+                    <h3>Loading...</h3>
+                </div>
+            )}
 
             {errors.chat.length>0 &&(
                 <ul>

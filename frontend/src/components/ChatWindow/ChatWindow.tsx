@@ -40,6 +40,7 @@ export function ChatWindow({ selectedChatId,
         isAddImage: false,
     });
     const [editingMessageId, setEditingMessageId] =useState<number|null>(null);
+    const [contextMenuPosition, setContextMenuPosition] = useState<"top" | "bottom">("top");
 
 
     const {
@@ -60,6 +61,7 @@ export function ChatWindow({ selectedChatId,
 
 
     useEffect(() => {
+        setInputValue("");
         setUiState((prev)=>({...prev, сontextMenuMessageId: null}))
     }, [selectedChatId]);
 
@@ -77,6 +79,7 @@ export function ChatWindow({ selectedChatId,
     const messagesRef = useRef(messages);
     const isFetchingRef = useRef(isFetching);
     const hasMoreRef = useRef(hasMoreMessages);
+    const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         messagesRef.current = messages;
@@ -142,6 +145,9 @@ export function ChatWindow({ selectedChatId,
                     setErrors((prev)=>(
                         {...prev, sendMessage: []}
                     ))
+                    setTimeout(() => {
+                        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+                    }, 200);
                 }
             }
             if(editingMessageId){
@@ -167,8 +173,16 @@ export function ChatWindow({ selectedChatId,
     }
 
 
-    function handleOnContext(e: React.MouseEvent<HTMLLIElement>, messageId: number){
+    function handleOnContext(e: React.MouseEvent<HTMLLIElement>, messageId: number) {
         e.preventDefault();
+        const halfScreen = window.innerHeight / 2;
+
+        if (e.clientY < halfScreen) {
+            setContextMenuPosition("bottom");
+        } else {
+            setContextMenuPosition("top");
+        }
+
         setUiState((prev)=>({...prev, contextMenuMessageId: messageId}));
     }
 
@@ -202,7 +216,10 @@ export function ChatWindow({ selectedChatId,
                             />
                         </Modal>
                     ):(
-                        <Modal onClose={()=> setUiState(prev => ({ ...prev, isSettingsOpen: false }))}>
+                        <Modal
+                            onClose={()=> setUiState(prev => ({ ...prev, isSettingsOpen: false }))}
+                            closeOnOverlayClick={true}
+                        >
                             <PrivateChatInfo chat={chat}
                                              currentUser={currentUser}
                                              setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
@@ -216,7 +233,10 @@ export function ChatWindow({ selectedChatId,
                 </div>
             )}
             {uiState.isEdit && chat &&(
-                <Modal onClose={()=>setUiState((prev)=>({...prev, isEdit:false}))}>
+                <Modal
+                    onClose={()=>setUiState((prev)=>({...prev, isEdit:false}))}
+                    closeOnOverlayClick={true}
+                >
                 <EditGroupChatForm chat={chat}
                     setSelectedChatId={setSelectedChatId}
                     setIsEdit={(value: boolean) => setUiState(prev => ({ ...prev, isEdit: value }))}
@@ -245,7 +265,9 @@ export function ChatWindow({ selectedChatId,
                       chat={chat}
                       setMessages={setMessages}
                       setInputValue={setInputValue}
-                      setEditingMessageId={setEditingMessageId}/>
+                      setEditingMessageId={setEditingMessageId}
+                      messagesEndRef={messagesEndRef}
+                      position={contextMenuPosition}/>
 
             <MessageForm chat={chat}
                          isAddImage={uiState.isAddImage}

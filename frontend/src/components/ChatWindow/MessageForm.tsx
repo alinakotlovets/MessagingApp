@@ -60,7 +60,10 @@ export function MessageForm({ chat,
     return(
         <>
             {isAddImage && (
-                <Modal onClose={() => setIsAddImage(false)}>
+                <Modal
+                    onClose={() => setIsAddImage(false)}
+                    closeOnOverlayClick={true}
+                >
                     <AddPhotoForm chat={chat} messages={messageState.messages} setMessages={messageState.setMessages} setIsAddImage={setIsAddImage}/>
                 </Modal>
             )}
@@ -80,7 +83,13 @@ export function MessageForm({ chat,
                                   name="text"
                                   placeholder="Message"
                                   value={inputValue}
-                                  onChange={(e)=>{setInputValue(e.target.value)}}/>
+                                  onChange={(e)=>{setInputValue(e.target.value)}}
+                                  onKeyDown={(e) => {
+                                      if (e.key === "Enter" && !e.shiftKey) {
+                                          e.preventDefault();
+                                          e.currentTarget.form?.requestSubmit();
+                                      }
+                                  }}/>
                         </div>
                         <button className="send-message-btn" type="submit"><img src={Send} alt="Send message button icon"/></button>
                         {errors.sendMessage.length >0 &&(

@@ -1,7 +1,8 @@
 import {useState} from "react";
 import * as React from "react";
 import Client from "../api/client.ts";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import "./registration.css"
 
 function RegisterPage(){
 
@@ -50,23 +51,24 @@ function RegisterPage(){
     }
 
     return(
-        <>
-            <form onSubmit={handleSubmit} encType="multipart/form-data">
-                <label htmlFor="login">Display name</label>
+        <div className="register-form-box">
+            <h2>Register</h2>
+            <form className="register-form" onSubmit={handleSubmit} encType="multipart/form-data">
+                <label htmlFor="login">Display name:</label>
                 <input id="displayName"
                        name="displayName"
                        type="text"
                        value={inputValue.displayName}
                        onChange={handleChange}
                 />
-                <label htmlFor="username">Username</label>
+                <label htmlFor="username">Username:</label>
                 <input id="username"
                        name="username"
                        type="text"
                        value={inputValue.username}
                        onChange={handleChange}
                 />
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">Email:</label>
                 <input id="email"
                        name="email"
                        type="email"
@@ -86,7 +88,11 @@ function RegisterPage(){
                        name="confirmPassword"
                        onChange={handleChange}/>
                 <label htmlFor="avatar">Avatar:</label>
+                <label className="file-label" htmlFor="avatar">
+                    {avatar ? avatar.name : "Choose image"}
+                </label>
                 <input id="avatar"
+                       className="file-input-hidden"
                        type="file"
                        name="avatar"
                        onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
@@ -94,7 +100,9 @@ function RegisterPage(){
                             setAvatar(e.target.files[0]);
                            }
                        }}/>
-                <button type="submit">Submit</button>
+                <div className="submit-btn-box">
+                    <button className="submit-btn" type="submit">Submit</button>
+                </div>
                 {errors.length>0 && (
                     <ul>
                         {errors.map((error, index)=>(
@@ -103,7 +111,8 @@ function RegisterPage(){
                     </ul>
                 )}
             </form>
-        </>
+            <h4>Already have account <Link className="register-link" to="/login">Login</Link></h4>
+        </div>
     )
 }
 

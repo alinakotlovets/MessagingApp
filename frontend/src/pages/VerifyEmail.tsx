@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import * as React from "react";
 import Client from "../api/client.ts";
 import {useLocation, useNavigate,} from "react-router-dom";
+import "./registration.css"
 
 function VerifyEmail(){
 
@@ -41,7 +42,7 @@ function VerifyEmail(){
     }
 
     return(
-        <>
+        <div className="register-form-box">
             <h2>Validate Email</h2>
             {errors.length > 0 && (
                 <ul>
@@ -50,7 +51,7 @@ function VerifyEmail(){
                     ))}
                 </ul>
             )}
-            <form onSubmit={handleSubmit}>
+            <form className="register-form" onSubmit={handleSubmit}>
                 <label htmlFor="code">Verify code:</label>
                 <input type="text"
                        name="code"
@@ -58,10 +59,14 @@ function VerifyEmail(){
                        id="code"
                        onChange={(e)=>setValueInput(e.target.value)}
                 />
-                <button type="submit">Submit</button>
+                <div className="submit-btn-box">
+                    <button className="submit-btn" type="submit">Submit</button>
+                </div>
             </form>
-            <h3>If you lost your code or it expires you can <button type="button" onClick={(e)=>handleResendCode(e)}>Resend Code</button></h3>
-        </>
+            <h3>If you lost your code or it expires you can
+                <button className="resend-code-btn" type="button" onClick={(e)=>handleResendCode(e)}>Resend Code</button>
+            </h3>
+        </div>
     )
 }
 

@@ -46,8 +46,18 @@ export function EditGroupChatForm({setSelectedChatId, setIsEdit, setChats, chat,
                    id="groupName"
                    name="groupName"
                    onChange={(e)=>setInputValue(e.target.value)}/>
-            <label htmlFor="avatar">Group avatar:</label>
+            {avatar && (
+                <div className="image-preview">
+                    <p>Preview image:</p>
+                    <img src={URL.createObjectURL(avatar)} alt="preview" />
+                </div>
+            )}
+            <label>Group avatar:</label>
+            <label className="file-label" htmlFor="avatar">
+                {avatar ? avatar.name : "Choose image"}
+            </label>
             <input name="avatar"
+                   className="file-input-hidden"
                    id="avatar"
                    type="file"
                    onChange={(e: React.ChangeEvent<HTMLInputElement>)=>{
@@ -55,7 +65,9 @@ export function EditGroupChatForm({setSelectedChatId, setIsEdit, setChats, chat,
                            setAvatar(e.target.files[0]);
                        }
                    }}/>
-            <button type="submit">Submit</button>
+            <div className="submit-btn-box">
+                <button className="submit-btn" type="submit">Submit</button>
+            </div>
             {errors.length>0 &&(
                 <ul>
                     {errors.map((e,index)=>(<li key={index}>{e}</li>))}

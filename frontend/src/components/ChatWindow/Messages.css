@@ -8,6 +8,7 @@
 .message-item {
     padding: 5px 10px;
     display: flex;
+    position: relative;
     flex-direction: column;
     gap: 2px;
     max-width: 100%;
@@ -17,6 +18,11 @@
 .message-item.other.text,
 .message-item.own.text{
     max-width: 60%;
+}
+
+.message-text{
+    font-weight: 500;
+    font-size: 16px;
 }
 
 .message-item.own {
@@ -66,4 +72,11 @@
     color: rgba(255, 255, 255, 0.5);
     white-space: nowrap;
     align-self: flex-end;
+}
+
+.flex-center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }

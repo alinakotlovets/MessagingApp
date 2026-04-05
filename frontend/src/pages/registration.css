@@ -1,0 +1,38 @@
+.register-form{
+    width: 500px;
+    height: auto;
+    padding: 30px 20px;
+    margin-top: 10px;
+    background-color: #303030;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    gap: 5px;
+}
+
+.register-form-box{
+    margin: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    height: calc(100vh - 30px);
+}
+
+.register-link{
+    color: var(--font-color-white);
+    font-weight: 600;
+}
+
+.resend-code-btn{
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    text-decoration: underline;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--font-color-white);
+}

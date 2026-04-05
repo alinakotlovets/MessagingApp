@@ -1,4 +1,4 @@
-import defaultAvatar from "../../assets/defaultAvatar.png";
+import defaultAvatar from "../assets/defaultAvatar.png";
 export function getChatInfo(chat: any, currentUser: any) {
         if (!chat || !currentUser) return null;
 

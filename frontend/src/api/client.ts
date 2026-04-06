@@ -23,7 +23,7 @@ export default async function Client( link: string,
             options.signal = signal;
         }
 
-        const response = await fetch(`http://localhost:3000${link}`, options);
+        const response = await fetch(`https://messagingapp-znzg.onrender.com${link}`, options);
 
         return response.json();
 

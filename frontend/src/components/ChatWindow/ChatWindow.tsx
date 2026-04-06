@@ -74,6 +74,7 @@ export function ChatWindow({ selectedChatId,
     const isFetchingRef = useRef(isFetching);
     const hasMoreRef = useRef(hasMoreMessages);
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
+    const isSubmittingRef = useRef(false);
 
     useEffect(() => {
         messagesRef.current = messages;
@@ -124,46 +125,53 @@ export function ChatWindow({ selectedChatId,
 
     async function handleSubmit(e:React.SubmitEvent<HTMLFormElement>){
         e.preventDefault();
-        if(selectedChatId !== null){
-            if(!editingMessageId){
-                const response = await Client(`/message/chat/${selectedChatId}`, "POST", JSON.stringify({text: inputValue}))
-                if(response.errors) {
-                    setErrors((prev)=>({
-                        ...prev,
-                        sendMessage: response.errors
-                    }));
+        if (isSubmittingRef.current) return;
+        isSubmittingRef.current = true;
+        try {
+            if(selectedChatId !== null){
+                if(!editingMessageId){
+                    const response = await Client(`/message/chat/${selectedChatId}`, "POST", JSON.stringify({text: inputValue}))
+                    if(response.errors) {
+                        setErrors((prev)=>({
+                            ...prev,
+                            sendMessage: response.errors
+                        }));
+                    }
+                    if(response.message){
+                        setMessages((prev:any) => ([...prev, response.message]));
+                        setInputValue("");
+                        setErrors((prev)=>(
+                            {...prev, sendMessage: []}
+                        ))
+                        setTimeout(() => {
+                            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+                        }, 200);
+                    }
                 }
-                if(response.message){
-                    setMessages((prev:any) => ([...prev, response.message]));
-                    setInputValue("");
-                    setErrors((prev)=>(
-                        {...prev, sendMessage: []}
-                    ))
-                    setTimeout(() => {
-                        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-                    }, 200);
+                if(editingMessageId){
+                    const response = await Client(`/message/chat/${selectedChatId}/${editingMessageId}`, "PUT", JSON.stringify({text: inputValue}))
+                    if(response.errors) {
+                        setErrors((prev)=>({
+                            ...prev,
+                            sendMessage: response.errors
+                        }));
+                    }
+                    if(response.message){
+                        const newMessages = messages.map((m)=> m.id === editingMessageId ? response.message : m );
+                        setMessages(newMessages);
+                        setInputValue("");
+                        setErrors((prev)=>(
+                            {...prev, sendMessage: []}
+                        ))
+                        setEditingMessageId(null);
+                        setUiState((prev)=>({...prev, сontextMenuMessageId: null}))
+                    }
                 }
             }
-            if(editingMessageId){
-                const response = await Client(`/message/chat/${selectedChatId}/${editingMessageId}`, "PUT", JSON.stringify({text: inputValue}))
-                if(response.errors) {
-                    setErrors((prev)=>({
-                        ...prev,
-                        sendMessage: response.errors
-                    }));
-                }
-                if(response.message){
-                    const newMessages = messages.map((m)=> m.id === editingMessageId ? response.message : m );
-                    setMessages(newMessages);
-                    setInputValue("");
-                    setErrors((prev)=>(
-                        {...prev, sendMessage: []}
-                    ))
-                    setEditingMessageId(null);
-                    setUiState((prev)=>({...prev, сontextMenuMessageId: null}))
-                }
-                }
-            }
+        } finally {
+            isSubmittingRef.current = false;
+        }
+
     }
 
 

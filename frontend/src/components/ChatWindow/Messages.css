@@ -87,4 +87,10 @@
     .message-item.own.text{
         max-width: 85%;
     }
+
+    .messages {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        min-height: 0;
+    }
 }

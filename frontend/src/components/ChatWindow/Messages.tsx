@@ -2,6 +2,7 @@ import {ContextMenu} from "./ContextMenu.tsx";
 import * as React from "react";
 import {getMessageClass} from "../../utils/getMessageClass.ts";
 import {formatDate} from "../../utils/formatDate.ts";
+import {useRef} from "react";
 import "./Messages.css";
 import "../ui/CustomScroll.css"
 import defaultAvatar from "../../assets/defaultAvatar.png"
@@ -42,6 +43,24 @@ export function Messages({messages,
                              position}:MessagesProps){
 
     if(!currentUser) return null;
+    const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    function handleTouchStart(e: React.TouchEvent<HTMLLIElement>, messageId: number) {
+        longPressTimer.current = setTimeout(() => {
+            const touch = e.touches[0];
+            handleOnContext({
+                preventDefault: () => {},
+                clientY: touch.clientY,
+                clientX: touch.clientX,
+            } as React.MouseEvent<HTMLLIElement>, messageId);
+        }, 500);
+    }
+    function handleTouchEnd() {
+        if (longPressTimer.current) {
+            clearTimeout(longPressTimer.current);
+            longPressTimer.current = null;
+        }
+    }
     return(
         <div className="messages custom-scroll">
             {isLoading.messages &&(
@@ -68,8 +87,13 @@ export function Messages({messages,
                 <>
                 <ul>
                     {messages.map((message: any)=>(
-                            <li  className="message-item" key={message.id} onContextMenu={(e)=>
-                                handleOnContext(e, message.id)}>
+                            <li  className="message-item" key={message.id}
+                                 onContextMenu={(e)=>
+                                handleOnContext(e, message.id)}
+                                 onTouchStart={(e) => handleTouchStart(e, message.id)}
+                                 onTouchEnd={handleTouchEnd}
+                                 onTouchMove={handleTouchEnd}
+                            >
                                 {contextMenuMessageId && message.id === contextMenuMessageId &&(
                                         <ContextMenu isAdmin={isAdmin}
                                                      currentUser={currentUser}

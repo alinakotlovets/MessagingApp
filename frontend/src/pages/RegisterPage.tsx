@@ -3,6 +3,7 @@ import * as React from "react";
 import Client from "../api/client.ts";
 import {Link, useNavigate} from "react-router-dom";
 import "./registration.css"
+import "../components/ui/CustomScroll.css";
 
 function RegisterPage(){
 
@@ -51,7 +52,7 @@ function RegisterPage(){
     }
 
     return(
-        <div className="register-form-box">
+        <div className="register-form-box custom-scroll">
             <h2>Register</h2>
             <form className="register-form" onSubmit={handleSubmit} encType="multipart/form-data">
                 <label htmlFor="login">Display name:</label>

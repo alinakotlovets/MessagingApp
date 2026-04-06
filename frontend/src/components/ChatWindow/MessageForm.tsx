@@ -71,7 +71,7 @@ export function MessageForm({ chat,
             {!isLoading.messages && selectedChatId !== null && (
                 <div className="message-form-box">
                     {messageState.editingMessageId &&(
-                        <button onClick={handlers.handleCloseEditMessage}>X</button>
+                        <button className="close-edit-btn" onClick={handlers.handleCloseEditMessage}>X</button>
                     )}
                     <form className="message-form" onClick={(e)=>e.stopPropagation()} onSubmit={handlers.handleSubmit}>
                         <button className="message-image-btn" type="button" onClick={(e)=>handlers.handleAddImage(e)}>

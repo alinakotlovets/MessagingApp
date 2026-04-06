@@ -69,3 +69,12 @@
     height: 25px;
     filter: invert(60%);
 }
+
+.close-edit-btn{
+    padding: 5px;
+    margin-right: 5px;
+    color: #969696;
+    background-color: transparent;
+    border: none;
+    font-size: 18px;
+}

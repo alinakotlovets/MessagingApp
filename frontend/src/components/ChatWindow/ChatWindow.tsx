@@ -127,6 +127,7 @@ export function ChatWindow({ selectedChatId,
         e.preventDefault();
         if (isSubmittingRef.current) return;
         isSubmittingRef.current = true;
+        if (!inputValue.trim()) return;
         try {
             if(selectedChatId !== null){
                 if(!editingMessageId){

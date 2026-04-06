@@ -42,3 +42,11 @@ ul{
 .primary-btn:hover{
   background-color: #303030;
 }
+
+
+@media screen and (max-width: 769px){
+  .primary-btn{
+    padding: 10px;
+    font-size: 14px;
+  }
+}

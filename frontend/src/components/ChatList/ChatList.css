@@ -46,3 +46,9 @@
 .chat-list-item:hover{
     background-color: #292929FF;
 }
+
+@media screen and (max-width: 1199.9px) {
+    .chat-list-box{
+        flex: 1.2;
+    }
+}

@@ -21,7 +21,7 @@ export function useChat({selectedChatId, currentUser}:Props){
     }>({chat: [], messages: [], sendMessage:[]});
 
     async function loadChat(signal?: AbortSignal){
-        if (!selectedChatId) return;
+        if (selectedChatId === null) return;
         try {
             const chat = await Client(`/chat/${selectedChatId}`, "GET", undefined, signal);
             if (chat.errors) setErrors((prev) => ({...prev, chat: chat.errors}));
@@ -30,7 +30,8 @@ export function useChat({selectedChatId, currentUser}:Props){
                 setIsAdmin((userFromChat && userFromChat.role=== "ADMIN"));
                 setChat(chat.chat);
             }
-        } catch {
+        } catch(e:any) {
+            if (signal?.aborted) return;
             setErrors((prev)=>({...prev, chat:["Network error or request failed"]}))
         }
         finally {
@@ -39,7 +40,7 @@ export function useChat({selectedChatId, currentUser}:Props){
     }
 
     async function loadMessages(signal?: AbortSignal) {
-        if (!selectedChatId) return;
+        if (selectedChatId === null) return;
         try {
             const msg = await Client(`/message/chat/${selectedChatId}`, "GET", undefined, signal);
             if (msg.errors) setErrors((prev) => ({...prev, messages: msg.errors}));
@@ -53,7 +54,8 @@ export function useChat({selectedChatId, currentUser}:Props){
 
                 return unique;
             });
-        } catch {
+        } catch(e:any) {
+            if (signal?.aborted) return;
             setErrors((prev)=>({...prev, messages:["Network error or request failed"]}))
         } finally {
             setIsLoading((prev) => ({...prev, messages: false}));
@@ -80,7 +82,7 @@ export function useChat({selectedChatId, currentUser}:Props){
 
 
     useEffect(()=>{
-        if (!selectedChatId) return;
+        if (selectedChatId === null) return;
         const intervalId = setInterval( async () => {
             loadMessages();
             loadChat();

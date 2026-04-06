@@ -14,6 +14,7 @@ function HomePage() {
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
     const [chats, setChats] = useState<any[]>([]);
     const [isEditUser, setIsEditUser] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
 
     useEffect(() => {
@@ -29,6 +30,16 @@ function HomePage() {
         getCurrentUser();
     }, []);
 
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <div className="content-box">
@@ -49,18 +60,46 @@ function HomePage() {
                     setIsEditUser={setIsEditUser}/>
                 </Modal>
             )}
-            <ChatList setSelectedChatId={setSelectedChatId}
-                      currentUser={currentUser}
-                      chats={chats}
-                      setChats={setChats}
-                      setIsEditUser={setIsEditUser}
-                      setIsGroupModalOpen={setIsGroupModalOpen}/>
-            <ChatWindow selectedChatId={selectedChatId}
+            {isMobile ? (
+                selectedChatId === null ? (
+                    <ChatList
+                        setSelectedChatId={setSelectedChatId}
+                        currentUser={currentUser}
+                        chats={chats}
+                        setChats={setChats}
+                        setIsEditUser={setIsEditUser}
+                        setIsGroupModalOpen={setIsGroupModalOpen}
+                    />
+                ) : (
+                    <ChatWindow
+                        selectedChatId={selectedChatId}
                         currentUser={currentUser}
                         setSelectedChatId={setSelectedChatId}
                         chats={chats}
                         setChats={setChats}
-            />
+                        isMobile={isMobile}
+                    />
+                )
+            ) : (
+                <>
+                    <ChatList
+                        setSelectedChatId={setSelectedChatId}
+                        currentUser={currentUser}
+                        chats={chats}
+                        setChats={setChats}
+                        setIsEditUser={setIsEditUser}
+                        setIsGroupModalOpen={setIsGroupModalOpen}
+                    />
+                    <ChatWindow
+                        selectedChatId={selectedChatId}
+                        currentUser={currentUser}
+                        setSelectedChatId={setSelectedChatId}
+                        chats={chats}
+                        setChats={setChats}
+                        isMobile={isMobile}
+                    />
+                </>
+            )}
         </div>
     )
 }

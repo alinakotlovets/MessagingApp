@@ -60,7 +60,7 @@ export function Messages({messages,
 
             {!isLoading.messages && selectedChatId !== null && messages.length === 0 &&(
                 <div className="flex-center">
-                <h2>There a no messages send one</h2>
+                <h3>There a no messages send one</h3>
                 </div>
             )}
 

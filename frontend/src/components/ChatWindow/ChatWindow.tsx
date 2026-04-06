@@ -19,14 +19,16 @@ type Props = {
     currentUser: { id: number; displayName: string, username: string, avatar:string|null } | null;
     setSelectedChatId: (value: number|null) => void,
     setChats: (chat:any)=>void,
-    chats:Chat[]
+    chats:Chat[],
+    isMobile: boolean
 };
 
 export function ChatWindow({ selectedChatId,
                                currentUser,
                                setSelectedChatId,
                                setChats,
-                               chats}: Props) {
+                               chats,
+                               isMobile}: Props) {
 
 
 
@@ -44,16 +46,8 @@ export function ChatWindow({ selectedChatId,
 
 
     const {
-        isInitialLoad,
-        setIsInitialLoad,
-        isLoading,
-        chat,
-        setChat,
-        messages,
-        setMessages,
-        isAdmin,
-        errors,
-        setErrors
+        isInitialLoad, setIsInitialLoad, isLoading, chat, setChat, messages, setMessages,
+        isAdmin, errors, setErrors
     } = useChat({
         selectedChatId,
         currentUser
@@ -251,7 +245,9 @@ export function ChatWindow({ selectedChatId,
                         selectedChatId={selectedChatId}
                         chat={chat}
                         currentUser={currentUser}
-                        setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}/>
+                        setIsSettingsOpen={(value: boolean) => setUiState(prev => ({ ...prev, isSettingsOpen: value }))}
+                        isMobile={isMobile}
+                        setSelectedChatId={setSelectedChatId}/>
 
             <Messages messages={messages}
                       isLoading={isLoading}

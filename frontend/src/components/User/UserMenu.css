@@ -64,3 +64,10 @@
 .menu-actions button:hover{
     background-color: rgb(41,41,41,1);
 }
+
+@media screen and (max-width: 769px){
+    .user-menu{
+        width: 100%;
+    }
+}
+

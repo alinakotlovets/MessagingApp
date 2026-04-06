@@ -76,3 +76,10 @@
     justify-content: center;
     gap: 30px;
 }
+
+
+@media screen and (max-width: 769px){
+    .chat-info-btns-box{
+        gap: 15px;
+    }
+}

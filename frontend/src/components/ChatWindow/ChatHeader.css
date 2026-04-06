@@ -20,6 +20,8 @@
 .chat-header-text-box{
     display: flex;
     flex-direction: column;
+    align-items: start;
+    justify-content: start;
     gap: 5px;
 }
 
@@ -44,3 +46,28 @@
     filter: invert(60%);
 }
 
+.back-btn{
+    background-color: transparent;
+    border: none;
+    color: var(--font-color-white);
+}
+
+
+.back-btn-box{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-btn-box img{
+    width: 20px;
+    height: 20px;
+    filter: invert(60%);
+}
+
+@media screen and (max-width: 769px){
+    .chat-header-text-box{
+        align-items: center;
+        justify-content: center;
+    }
+}

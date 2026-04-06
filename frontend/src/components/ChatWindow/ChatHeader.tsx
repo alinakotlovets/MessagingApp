@@ -3,6 +3,7 @@ import type {Chat} from "../../types/Chat.ts";
 import type {User} from "../../types/User.ts";
 import "./ChatHeader.css";
 import Dots from "../../assets/dots.png";
+import Back from "../../assets/back.png";
 
 type Props = {
     isLoading: { chat: boolean; messages: boolean };
@@ -11,8 +12,11 @@ type Props = {
     chat: Chat | null;
     currentUser: User | null;
     setIsSettingsOpen: (value: boolean) => void;
+    isMobile: boolean
+    setSelectedChatId: (value: number | null) => void
 }
-export function ChatHeader({isLoading, errors, selectedChatId, chat, currentUser, setIsSettingsOpen}:Props) {
+export function ChatHeader({isLoading, errors, selectedChatId, chat, currentUser,
+                               setIsSettingsOpen, isMobile, setSelectedChatId}:Props) {
 
     const user = getChatInfo(chat, currentUser);
 
@@ -34,12 +38,18 @@ export function ChatHeader({isLoading, errors, selectedChatId, chat, currentUser
 
             {!isLoading.chat && selectedChatId === null &&(
                 <div className="chat-not-chosen">
-                    <h2>Chat not chosen</h2>
+                    <h3>Chat not chosen</h3>
                 </div>
             )}
 
             {!isLoading.chat && selectedChatId !== null && chat &&(
                 <div className="chat-window-header">
+                    {isMobile &&(<button className="back-btn" onClick={()=> setSelectedChatId(null)}>
+                        <div className="back-btn-box">
+                            <img src={Back} alt="Back button icon"/>
+                            <h4>Back</h4>
+                        </div>
+                    </button>)}
                     <div className="chat-header-text-box">
                     <h2 className="font-18px">{user?.name}</h2>
                     {chat.type === "GROUP"

@@ -9,7 +9,7 @@
 
 @media  screen and (max-width: 768px) {
     .content-box{
-        height: 100vh;
+        height: 100dvh;
         overflow: hidden;
     }
 }

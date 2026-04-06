@@ -83,13 +83,16 @@ export function useChat({selectedChatId, currentUser}:Props){
 
     useEffect(()=>{
         if (selectedChatId === null) return;
+        const controller = new AbortController();
+
         const intervalId = setInterval( async () => {
-            loadMessages();
-            loadChat();
+            loadMessages(controller.signal);
+            loadChat(controller.signal);
         }, 3000);
 
         return () => {
             clearInterval(intervalId);
+            controller.abort();
         };
     }, [selectedChatId])
 

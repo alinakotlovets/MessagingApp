@@ -7,8 +7,17 @@
 
 .user-text-box{
     display: flex;
+    min-width: 0;
     flex-direction: column;
     gap: 5px;
+}
+
+.user-text-box h3,
+.user-text-box h4 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .user-info-box{
@@ -16,6 +25,7 @@
     align-items: start;
     justify-content: space-between;
     padding: 10px 15px;
+    overflow: hidden;
     transition: background-color 300ms ease-in-out;
     border-radius: 20px;
 }
@@ -33,6 +43,8 @@
 .user-info-box-left{
     display: flex;
     align-items: start;
+    min-width: 0;
+    flex: 1;
     justify-content: start;
     gap: 10px;
 }

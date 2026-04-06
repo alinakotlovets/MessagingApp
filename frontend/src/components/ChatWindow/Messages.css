@@ -48,6 +48,10 @@
     border-radius: 20px;
 }
 
+.image{
+    max-width: 75%;
+}
+
 .message-header {
     display: flex;
     align-items: center;

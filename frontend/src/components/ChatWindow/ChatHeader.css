@@ -23,6 +23,16 @@
     align-items: start;
     justify-content: start;
     gap: 5px;
+    min-width: 0;
+    flex: 1;
+}
+
+.chat-header-text-box h2,
+.chat-header-text-box h4 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 80%;
 }
 
 .text-grey{

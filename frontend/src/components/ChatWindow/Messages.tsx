@@ -88,9 +88,14 @@ export function Messages({messages,
                 <ul>
                     {messages.map((message: any)=>(
                             <li  className="message-item" key={message.id}
-                                 onContextMenu={(e)=>
-                                handleOnContext(e, message.id)}
-                                 onTouchStart={(e) => handleTouchStart(e, message.id)}
+                                 onContextMenu={(e) => {
+                                     const canAct = currentUser.id === message.senderId || isAdmin === true;
+                                     if (canAct) handleOnContext(e, message.id);
+                                 }}
+                                 onTouchStart={(e) => {
+                                     const canAct = currentUser.id === message.senderId || isAdmin === true;
+                                     if (canAct) handleTouchStart(e, message.id);
+                                 }}
                                  onTouchEnd={handleTouchEnd}
                                  onTouchMove={handleTouchEnd}
                             >

@@ -31,6 +31,7 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
     const [searchValue, setSearchValue] = useState("");
     const [users, setUsers] = useState<User[] | null>(null);
     const [isUserMenu, setIsUserMenu] = useState<boolean>(false);
+    const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
 
     useEffect(() => {
         async function getUserChats(showLoading: boolean) {
@@ -81,6 +82,9 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
 
     async function handleCreateChat(e: React.MouseEvent<HTMLLIElement>, userId: number) {
         e.preventDefault();
+        if(isCreatingChat) return;
+
+        setIsCreatingChat(true);
         setErrors(prev => ({ ...prev, searchErrors: [] }));
         const chat = await Client("/chat/private", "POST", JSON.stringify({ userId }));
         if (chat.errors) {
@@ -97,6 +101,8 @@ export function ChatList({ setSelectedChatId, currentUser, setChats, chats, setI
             });
             setSelectedChatId(chat.chat.id);
         }
+
+        setIsCreatingChat(false);
     }
 
     return (

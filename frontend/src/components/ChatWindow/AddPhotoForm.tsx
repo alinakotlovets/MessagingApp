@@ -15,8 +15,13 @@ type Props={
 export function AddPhotoForm({chat, messages, setMessages, setIsAddImage}:Props){
     const [image, setImage] = useState<File | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
+    const [isAddingImage, setIsAddingImage] = useState(false);
+
     async function handleSubmit(e:React.SubmitEvent<HTMLFormElement>){
         e.preventDefault();
+        if(isAddingImage) return;
+
+        setIsAddingImage(true);
         const formData =new FormData();
         if(image) formData.append("image", image);
         if(!chat) return null;
@@ -27,6 +32,7 @@ export function AddPhotoForm({chat, messages, setMessages, setIsAddImage}:Props)
             setMessages(newMessages);
             setIsAddImage(false);
         }
+        setIsAddingImage(false)
     }
 
     return(

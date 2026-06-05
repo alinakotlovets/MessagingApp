@@ -23,9 +23,8 @@ export default async function Client( link: string,
             options.signal = signal;
         }
 
-        const mode = "dev"
         const baseUrl = (import.meta as any).env.VITE_BASE_URL || "https://messagingapp-znzg.onrender.com";
-        const response = await fetch(`${mode==="dev" ? "http://localhost:3000" : baseUrl}${link}`, options);
+        const response = await fetch(`${baseUrl}${link}`, options);
 
         return response.json();
 

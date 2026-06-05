@@ -1,6 +1,6 @@
 import * as React from "react";
+import {useEffect} from "react";
 import "./Modal.css";
-import "../ui/CustomScroll.css"
 
 type Props = {
     children: React.ReactNode;
@@ -9,10 +9,20 @@ type Props = {
 };
 
 export function Modal({ children, onClose, closeOnOverlayClick}: Props) {
+
+    useEffect(() => {
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        document.body.style.overflow = "hidden";
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+        return () => {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        };
+    }, []);
     return (
         <div className="modal-overlay" onClick={()=>{if (closeOnOverlayClick) onClose();}}>
             <div
-                className="modal-content custom-scroll"
+                className="modal-content"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button className="close-btn" onClick={onClose}>X</button>

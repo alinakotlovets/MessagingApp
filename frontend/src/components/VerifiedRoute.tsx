@@ -16,10 +16,19 @@ export default function VerifiedRoute({ children }: { children: JSX.Element }){
             try {
                 const response = await Client("/auth/status", "GET");
                 if(response.errors){
-                    navigate("/verify-email", { state: { error: response.errors }});
+                    const isNotVerified = response.errors.some((e: string) =>
+                        e.toLowerCase().includes("not verified")
+                    );
+                    if(isNotVerified){
+                        navigate("/verify-email", { state: { error: response.errors }});
+                    } else {
+                        localStorage.removeItem("token");
+                        navigate("/login", { state: { error: response.errors }});
+                    }
                 } else {
                     setLoading(false);
                 }
+
             } catch (e: any){
                 const messages = [`${e.message}` || "Something went wrong"];
                 navigate("/login", { state: { error: messages }});
@@ -30,7 +39,7 @@ export default function VerifiedRoute({ children }: { children: JSX.Element }){
 
     if(loading) {
         return  (
-            <div className="flex-center">
+            <div className="flex-center vh100">
                 <h3>Loading...</h3>
             </div>
         )

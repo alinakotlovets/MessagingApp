@@ -7,6 +7,10 @@
 }
 
 
+.vh100{
+    height: 100vh;
+}
+
 @media  screen and (max-width: 768px) {
     .content-box{
         height: 100dvh;
